@@ -13,6 +13,7 @@ try:
     import builtins
 except ImportError:
     import __builtin__ as builtins
+import functools
 import re
 import unittest
 
@@ -53,7 +54,8 @@ def scan_programs(parser, command=[]):
 def import_object(import_name):
     module_name, expr = import_name.split(':', 1)
     mod = __import__(module_name)
-    mod = reduce(getattr, module_name.split('.')[1:], mod)
+    reduce_ = getattr(functools, 'reduce', None) or reduce
+    mod = reduce_(getattr, module_name.split('.')[1:], mod)
     globals_ = builtins
     if not isinstance(globals_, dict):
         globals_ = globals_.__dict__
@@ -193,7 +195,25 @@ class ScannerTestCase(unittest.TestCase):
                          options[0])
 
 
+class UtilTestCase(unittest.TestCase):
+
+    def test_import_object(self):
+        cls = import_object('sphinxcontrib.autoprogram:UtilTestCase')
+        self.assertTrue(cls is UtilTestCase)
+        instance = import_object(
+            'sphinxcontrib.autoprogram:UtilTestCase("test_import_object")'
+        )
+        self.assertIsInstance(instance, UtilTestCase)
+
+    if not hasattr(unittest.TestCase, 'assertIsInstance'):
+        def assertIsInstance(self, instance, cls):
+            self.assertTrue(isinstance(instance, cls),
+                            '{0!r} is not an instance of {1.__module__}.'
+                            '{1.__name__}'.format(instance, cls))
+
+
 suite = unittest.TestSuite()
 suite.addTests(
     unittest.defaultTestLoader.loadTestsFromTestCase(ScannerTestCase)
 )
+suite.addTests(unittest.defaultTestLoader.loadTestsFromTestCase(UtilTestCase))
