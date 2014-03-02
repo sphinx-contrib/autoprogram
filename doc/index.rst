@@ -81,7 +81,7 @@ The :mod:`sphinxcontrib.autoprogram`, a part of :mod:`sphinxcontrib`,
 is written by `Hong Minhee`__ and distributed under BSD license.
 
 The source code is mantained under `the common repository of contributed
-extensions for Sphinx`__ (find the :file:`httpdomain` directory inside
+extensions for Sphinx`__ (find the :file:`autoprogram` directory inside
 the repository).
 
 .. sourcecode:: console
