@@ -9,7 +9,7 @@
 =============================================================
 
 This contrib extension, :mod:`sphinxcontrib.autoprogram`, provides an automated
-way to document CLI programs.  It scans :class:`arparser.ArgumentParser`
+way to document CLI programs.  It scans :class:`argparse.ArgumentParser`
 object, and then expands it into a set of :rst:dir:`.. program::` and
 :rst:dir:`.. option::` directives.
 
@@ -61,7 +61,7 @@ That's it.  It will be rendered as:
 
    The import name also can evaluate other any Python expressions.
    For example, if ``get_parser()`` function in ``abcd.efgh`` module creates
-   an :class:`argparser.ArgumentParser` and returns it:
+   an :class:`argparse.ArgumentParser` and returns it:
 
    .. code-block:: rst
 
