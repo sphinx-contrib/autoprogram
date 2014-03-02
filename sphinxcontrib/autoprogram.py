@@ -27,10 +27,11 @@ __all__ = ('AutoprogramDirective', 'ScannerTestCase',
            'import_object', 'scan_programs', 'setup', 'suite')
 
 
-def scan_programs(parser):
+def scan_programs(parser, command=[]):
     options = []
     for arg in parser._actions:
-        if not arg.option_strings:
+        if not (arg.option_strings or
+                isinstance(arg, argparse._SubParsersAction)):
             name = (arg.metavar or arg.dest).lower()
             desc = (arg.help or '') % {'default': arg.default}
             options.append(([name], desc))
@@ -41,7 +42,12 @@ def scan_programs(parser):
                      for option_string in arg.option_strings]
             desc = (arg.help or '') % {'default': arg.default}
             options.append((names, desc))
-    yield [], options, parser.description
+    yield command, options, parser.description
+    if parser._subparsers:
+        for cmd, sub in parser._subparsers._actions[-1].choices.items():
+            if isinstance(sub, argparse.ArgumentParser):
+                for program in scan_programs(sub, command + [cmd]):
+                    yield program
 
 
 def import_object(import_name):
@@ -140,6 +146,52 @@ class ScannerTestCase(unittest.TestCase):
              'sum the integers (default: find the max)'),
             options[2]
         )
+
+    def test_subcommands(self):
+        parser = argparse.ArgumentParser(description='Process some integers.')
+        subparsers = parser.add_subparsers()
+        max_parser = subparsers.add_parser('max', description='Find the max.')
+        max_parser.set_defaults(accumulate=max)
+        max_parser.add_argument('integers', metavar='N', type=int, nargs='+',
+                                help='An integer for the accumulator.')
+        sum_parser = subparsers.add_parser('sum',
+                                           description='Sum the integers.')
+        sum_parser.set_defaults(accumulate=sum)
+        sum_parser.add_argument('integers', metavar='N', type=int, nargs='+',
+                                help='An integer for the accumulator.')
+        programs = scan_programs(parser)
+        programs = list(programs)
+        self.assertEqual(3, len(programs))
+        # main
+        program, options, desc = programs[0]
+        self.assertEqual([], program)
+        self.assertEqual('Process some integers.', desc)
+        self.assertEqual(1, len(options))
+        self.assertEqual(
+            (['-h <help>', '--help <help>'],
+             'show this help message and exit'),
+            options[0]
+        )
+        # max
+        program, options, desc = programs[1]
+        self.assertEqual(['max'], program)
+        self.assertEqual('Find the max.', desc)
+        self.assertEqual(2, len(options))
+        self.assertEqual((['n'], 'An integer for the accumulator.'),
+                         options[0])
+        self.assertEqual(
+            (['-h <help>', '--help <help>'],
+             'show this help message and exit'),
+            options[1]
+        )
+        # sum
+        program, options, desc = programs[2]
+        self.assertEqual(['sum'], program)
+        self.assertEqual('Sum the integers.', desc)
+        self.assertEqual(2, len(options))
+        self.assertEqual((['n'], 'An integer for the accumulator.'),
+                         options[0])
+
 
 suite = unittest.TestSuite()
 suite.addTests(
