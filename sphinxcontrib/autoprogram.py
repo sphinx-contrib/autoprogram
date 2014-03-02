@@ -43,7 +43,7 @@ def scan_programs(parser, command=[]):
                      for option_string in arg.option_strings]
             desc = (arg.help or '') % {'default': arg.default}
             options.append((names, desc))
-    yield command, options, parser.description
+    yield command, options, parser.description or ''
     if parser._subparsers:
         for cmd, sub in parser._subparsers._actions[-1].choices.items():
             if isinstance(sub, argparse.ArgumentParser):
