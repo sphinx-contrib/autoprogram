@@ -31,7 +31,7 @@ def scan_programs(parser):
     options = []
     for arg in parser._actions:
         if not arg.option_strings:
-            name = '<{0}>'.format((arg.metavar or arg.dest).lower())
+            name = (arg.metavar or arg.dest).lower()
             desc = (arg.help or '') % {'default': arg.default}
             options.append(([name], desc))
     for arg in parser._actions:
@@ -76,7 +76,7 @@ class AutoprogramDirective(Directive):
             yield desc
             yield ''
             for option_strings, help_ in options:
-                yield '.. option:: {0}'.format(' '.join(option_strings))
+                yield '.. option:: {0}'.format(', '.join(option_strings))
                 yield ''
                 yield '   ' + help_.replace('\n', '   \n')
                 yield ''
@@ -127,7 +127,7 @@ class ScannerTestCase(unittest.TestCase):
         self.assertEqual('Process some integers.', desc)
         self.assertEqual(3, len(options))
         self.assertEqual(
-            (['<n>'], 'an integer for the accumulator'),
+            (['n'], 'an integer for the accumulator'),
             options[0]
         )
         self.assertEqual(
