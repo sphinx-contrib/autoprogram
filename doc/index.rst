@@ -49,6 +49,23 @@ That's it.  It will be rendered as:
     .. autoprogram:: cli:parser
        :prog: cli.py
 
+If there are subcommands (subparsers), they are rendered to subsections.
+For example, givem the following Python CLI program (say it's
+:file:`subcmds.py`):
+
+.. include:: subcmds.py
+   :code:
+
+.. code-block:: rst
+
+   .. autoprogram:: subcmds:parser
+      :prog: subcmds.py
+
+The above reStructuredText will render:
+
+    .. autoprogram:: subcmds:parser
+       :prog: subcmds.py
+
 .. rst:directive:: .. autoprogram:: module:parser
 
    It takes an import name of the parser object.  For example, if ``xyz``
