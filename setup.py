@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 
 
 # Do not change the variable name.  It's parsed by doc/conf.py script.
-version = '0.1.0'
+version = '0.1.1'
 
 requires = ['Sphinx >= 1.2']
 
