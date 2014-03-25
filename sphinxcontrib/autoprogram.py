@@ -43,7 +43,7 @@ def scan_programs(parser, command=[]):
                      for option_string in arg.option_strings]
             desc = (arg.help or '') % {'default': arg.default}
             options.append((names, desc))
-    yield command, options, parser.description or ''
+    yield command, options, parser.description, parser.epilog or ''
     if parser._subparsers:
         for cmd, sub in parser._subparsers._actions[-1].choices.items():
             if isinstance(sub, argparse.ArgumentParser):
@@ -72,7 +72,7 @@ class AutoprogramDirective(Directive):
         import_name, = self.arguments
         parser = import_object(import_name or '__undefined__')
         prog = self.options.get('prog', parser.prog)
-        for commands, options, desc in scan_programs(parser):
+        for commands, options, desc, epilog in scan_programs(parser):
             command = ' '.join(commands)
             title = '{0} {1}'.format(prog, command).rstrip()
             yield ''
@@ -88,6 +88,9 @@ class AutoprogramDirective(Directive):
                 yield ''
                 yield '   ' + help_.replace('\n', '   \n')
                 yield ''
+            yield ''
+            for line in epilog.splitlines():
+                yield line
 
     def run(self):
         node = nodes.section()
