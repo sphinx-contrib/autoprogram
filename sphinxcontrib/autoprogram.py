@@ -8,6 +8,7 @@
     :license: BSD, see LICENSE for details.
 
 """
+# pylint: disable=protected-access,missing-docstring
 import argparse
 try:
     import builtins
@@ -38,9 +39,12 @@ def scan_programs(parser, command=[]):
             options.append(([name], desc))
     for arg in parser._actions:
         if arg.option_strings:
-            metavar = (arg.metavar or arg.dest).lower()
-            names = ['{0} <{1}>'.format(option_string, metavar)
-                     for option_string in arg.option_strings]
+            if arg.metavar or arg.type:
+                metavar = (arg.metavar or arg.type.__name__).lower()
+                names = ['{0} <{1}>'.format(option_string, metavar)
+                         for option_string in arg.option_strings]
+            else:
+                names = arg.option_strings
             desc = (arg.help or '') % {'default': arg.default}
             options.append((names, desc))
     yield command, options, parser.description, parser.epilog or ''
