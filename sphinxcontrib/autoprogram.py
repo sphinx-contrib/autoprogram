@@ -87,6 +87,8 @@ class AutoprogramDirective(Directive):
             yield ''
             yield desc
             yield ''
+            yield parser.format_usage()
+            yield ''
             for option_strings, help_ in options:
                 yield '.. option:: {0}'.format(', '.join(option_strings))
                 yield ''
