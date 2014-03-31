@@ -75,10 +75,10 @@ class AutoprogramDirective(Directive):
     def make_rst(self):
         import_name, = self.arguments
         parser = import_object(import_name or '__undefined__')
-        prog = self.options.get('prog', parser.prog)
+        parser.prog = self.options.get('prog', parser.prog)
         for commands, options, desc, epilog in scan_programs(parser):
             command = ' '.join(commands)
-            title = '{0} {1}'.format(prog, command).rstrip()
+            title = '{0} {1}'.format(parser.prog, command).rstrip()
             yield ''
             yield '.. program:: ' + title
             yield ''
