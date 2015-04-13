@@ -10,6 +10,7 @@
 """
 # pylint: disable=protected-access,missing-docstring
 import argparse
+import collections
 try:
     import builtins
 except ImportError:
@@ -25,7 +26,7 @@ from sphinx.util.compat import Directive
 from sphinx.util.nodes import nested_parse_with_titles
 from sphinx.domains import std
 
-__all__ = ('AutoprogramDirective', 'ScannerTestCase',
+__all__ = ('BOOLEAN_OPTIONS', 'AutoprogramDirective', 'ScannerTestCase',
            'import_object', 'scan_programs', 'setup', 'suite')
 
 
@@ -39,17 +40,22 @@ def scan_programs(parser, command=[]):
             options.append(([name], desc))
     for arg in parser._actions:
         if arg.option_strings:
-            if arg.metavar or arg.type:
-                metavar = (arg.metavar or arg.type.__name__).lower()
+            if isinstance(arg, (argparse._StoreAction,
+                                argparse._AppendAction)):
+                metavar = (arg.metavar or arg.dest).lower()
                 names = ['{0} <{1}>'.format(option_string, metavar)
                          for option_string in arg.option_strings]
             else:
-                names = arg.option_strings
+                names = list(arg.option_strings)
             desc = (arg.help or '') % {'default': arg.default}
             options.append((names, desc))
     yield command, options, parser.description, parser.epilog or ''
     if parser._subparsers:
-        for cmd, sub in parser._subparsers._actions[-1].choices.items():
+        choices = parser._subparsers._actions[-1].choices.items()
+        if not (hasattr(collections, 'OrderedDict') and
+                isinstance(choices, collections.OrderedDict)):
+            choices = sorted(choices, key=lambda pair: pair[0])
+        for cmd, sub in choices:
             if isinstance(sub, argparse.ArgumentParser):
                 for program in scan_programs(sub, command + [cmd]):
                     yield program
@@ -130,8 +136,11 @@ class ScannerTestCase(unittest.TestCase):
 
     def test_simple_parser(self):
         parser = argparse.ArgumentParser(description='Process some integers.')
-        parser.add_argument('integers', metavar='N', type=int, nargs='+',
+        parser.add_argument('integers', metavar='N', type=int, nargs='*',
                             help='an integer for the accumulator')
+        parser.add_argument('-i', '--identity', type=int, default=0,
+                            help='the default result for no arguments '
+                                 '(default: 0)')
         parser.add_argument('--sum', dest='accumulate', action='store_const',
                             const=sum, default=max,
                             help='sum the integers (default: find the max)')
@@ -142,20 +151,23 @@ class ScannerTestCase(unittest.TestCase):
         program, options, desc = pair
         self.assertEqual([], program)
         self.assertEqual('Process some integers.', desc)
-        self.assertEqual(3, len(options))
+        self.assertEqual(4, len(options))
         self.assertEqual(
             (['n'], 'an integer for the accumulator'),
             options[0]
         )
         self.assertEqual(
-            (['-h <help>', '--help <help>'],
-             'show this help message and exit'),
+            (['-h', '--help'], 'show this help message and exit'),
             options[1]
         )
         self.assertEqual(
-            (['--sum <accumulate>'],
-             'sum the integers (default: find the max)'),
+            (['-i <identity>', '--identity <identity>'],
+             'the default result for no arguments (default: 0)'),
             options[2]
+        )
+        self.assertEqual(
+            (['--sum'], 'sum the integers (default: find the max)'),
+            options[3]
         )
 
     def test_subcommands(self):
@@ -179,7 +191,7 @@ class ScannerTestCase(unittest.TestCase):
         self.assertEqual('Process some integers.', desc)
         self.assertEqual(1, len(options))
         self.assertEqual(
-            (['-h <help>', '--help <help>'],
+            (['-h', '--help'],
              'show this help message and exit'),
             options[0]
         )
@@ -191,7 +203,7 @@ class ScannerTestCase(unittest.TestCase):
         self.assertEqual((['n'], 'An integer for the accumulator.'),
                          options[0])
         self.assertEqual(
-            (['-h <help>', '--help <help>'],
+            (['-h', '--help'],
              'show this help message and exit'),
             options[1]
         )

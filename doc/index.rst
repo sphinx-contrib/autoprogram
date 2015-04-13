@@ -116,7 +116,11 @@ Changelog
 Version 0.1.1
 `````````````
 
-To be released.
+Released on April 22, 2014.
+
+- Omit metavars of ``store_const``/``store_true``/``store_false`` options.
+- Sort subcommands in alphabetical order if Python 2.6 which doesn't have
+  :class:`collections.OrderedDict`.
 
 
 Version 0.1.0
