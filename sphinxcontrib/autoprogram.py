@@ -147,8 +147,8 @@ class ScannerTestCase(unittest.TestCase):
         programs = scan_programs(parser)
         programs = list(programs)
         self.assertEqual(1, len(programs))
-        pair, = programs
-        program, options, desc = pair
+        parser_info, = programs
+        program, options, desc, _ = parser_info
         self.assertEqual([], program)
         self.assertEqual('Process some integers.', desc)
         self.assertEqual(4, len(options))
@@ -186,7 +186,7 @@ class ScannerTestCase(unittest.TestCase):
         programs = list(programs)
         self.assertEqual(3, len(programs))
         # main
-        program, options, desc = programs[0]
+        program, options, desc, _ = programs[0]
         self.assertEqual([], program)
         self.assertEqual('Process some integers.', desc)
         self.assertEqual(1, len(options))
@@ -196,7 +196,7 @@ class ScannerTestCase(unittest.TestCase):
             options[0]
         )
         # max
-        program, options, desc = programs[1]
+        program, options, desc, _ = programs[1]
         self.assertEqual(['max'], program)
         self.assertEqual('Find the max.', desc)
         self.assertEqual(2, len(options))
@@ -208,12 +208,21 @@ class ScannerTestCase(unittest.TestCase):
             options[1]
         )
         # sum
-        program, options, desc = programs[2]
+        program, options, desc, _ = programs[2]
         self.assertEqual(['sum'], program)
         self.assertEqual('Sum the integers.', desc)
         self.assertEqual(2, len(options))
         self.assertEqual((['n'], 'An integer for the accumulator.'),
                          options[0])
+
+    def test_simple_parser(self):
+        parser = argparse.ArgumentParser(description='Process some integers.', epilog='The integers will be processed.')
+        programs = scan_programs(parser)
+        programs = list(programs)
+        self.assertEqual(1, len(programs))
+        parser_data, = programs
+        program, options, desc, epilog = parser_data 
+        self.assertEqual('The integers will be processed.', epilog)
 
 
 class UtilTestCase(unittest.TestCase):
