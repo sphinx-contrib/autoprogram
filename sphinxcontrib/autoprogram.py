@@ -215,7 +215,7 @@ class ScannerTestCase(unittest.TestCase):
         self.assertEqual((['n'], 'An integer for the accumulator.'),
                          options[0])
 
-    def test_simple_parser(self):
+    def test_parse_epilog(self):
         parser = argparse.ArgumentParser(description='Process some integers.', epilog='The integers will be processed.')
         programs = scan_programs(parser)
         programs = list(programs)
