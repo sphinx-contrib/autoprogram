@@ -42,9 +42,14 @@ def scan_programs(parser, command=[]):
         if arg.option_strings:
             if isinstance(arg, (argparse._StoreAction,
                                 argparse._AppendAction)):
-                metavar = (arg.metavar or arg.dest).lower()
-                names = ['{0} <{1}>'.format(option_string, metavar)
-                         for option_string in arg.option_strings]
+                if arg.choices is None:
+                    metavar = (arg.metavar or arg.dest).lower()
+                    names = ['{0} <{1}>'.format(option_string, metavar)
+                             for option_string in arg.option_strings]
+                else:
+                    choices = '{0}'.format(','.join(arg.choices))
+                    names = ['{0} {{{1}}}'.format(option_string, choices)
+                             for option_string in arg.option_strings]
             else:
                 names = list(arg.option_strings)
             desc = (arg.help or '') % {'default': arg.default}
@@ -214,6 +219,15 @@ class ScannerTestCase(unittest.TestCase):
         self.assertEqual(2, len(options))
         self.assertEqual((['n'], 'An integer for the accumulator.'),
                          options[0])
+
+
+    def test_choices(self):
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--awesomeness", choices=["meh", "awesome"])
+        program, options, desc, _ = list(scan_programs(parser))[0]
+        log_option = options[1]
+        self.assertEqual((["--awesomeness {meh,awesome}"],''), log_option)
+
 
     def test_parse_epilog(self):
         parser = argparse.ArgumentParser(description='Process some integers.', epilog='The integers will be processed.')
