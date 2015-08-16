@@ -96,7 +96,7 @@ class AutoprogramDirective(Directive):
             yield title
             yield ('!' if commands else '?') * len(title)
             yield ''
-            yield desc
+            yield desc or ''
             yield ''
             yield parser.format_usage()
             yield ''
@@ -107,7 +107,7 @@ class AutoprogramDirective(Directive):
                 yield ''
             yield ''
             for line in epilog.splitlines():
-                yield line
+                yield line or ''
 
     def run(self):
         node = nodes.section()
