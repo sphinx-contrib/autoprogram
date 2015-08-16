@@ -68,7 +68,39 @@ def scan_programs(parser, command=[]):
 
 def import_object(import_name):
     module_name, expr = import_name.split(':', 1)
-    mod = __import__(module_name)
+    try:
+        mod = __import__(module_name)
+    except:
+        # This happens if the file is a script with no .py extension. Here we
+        # trick autoprogram to load a module in memory with the contents of
+        # the script, if there is a script named module_name. Otherwise, raise
+        # an ImportError as it did before.
+        import glob
+        import sys
+        import os
+        import imp
+        found = False
+        for p in sys.path:
+            f = glob.glob(os.path.join(p, module_name))
+            if len(f) > 0:
+                with open(f[0]) as fobj:
+                    codestring = fobj.read()
+                foo = imp.new_module("foo")
+                try:
+                    # Python 2
+                    cmd = 'exec codestring in foo.__dict__'
+                    exec(cmd)
+                except:
+                    # Python 3
+                    cmd = 'exec(codestring, foo.__dict__)'
+                    exec(cmd)
+                sys.modules["foo"] = foo
+                mod = __import__("foo")
+                found = True
+                break
+        if not found:
+            raise(ImportError, "No module named {}".format(module_name))
+
     reduce_ = getattr(functools, 'reduce', None) or reduce
     mod = reduce_(getattr, module_name.split('.')[1:], mod)
     globals_ = builtins
