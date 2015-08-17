@@ -18,6 +18,7 @@ except ImportError:
 import functools
 import re
 import unittest
+import six
 
 from docutils import nodes
 from docutils.parsers.rst.directives import unchanged
@@ -86,14 +87,8 @@ def import_object(import_name):
                 with open(f[0]) as fobj:
                     codestring = fobj.read()
                 foo = imp.new_module("foo")
-                try:
-                    # Python 2
-                    cmd = 'exec codestring in foo.__dict__'
-                    exec(cmd)
-                except:
-                    # Python 3
-                    cmd = 'exec(codestring, foo.__dict__)'
-                    exec(cmd)
+                six.exec_(codestring, foo.__dict__)
+
                 sys.modules["foo"] = foo
                 mod = __import__("foo")
                 found = True
