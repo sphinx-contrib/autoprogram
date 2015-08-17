@@ -31,7 +31,9 @@ needs_sphinx = '1.2'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.intersphinx', 'sphinxcontrib.autoprogram'
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.extlinks',
+    'sphinxcontrib.autoprogram',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -274,4 +276,12 @@ texinfo_documents = [
 intersphinx_mapping = {
     'python': ('http://docs.python.org/', None),
     'sphinx': ('http://sphinx-doc.org/', None)
+}
+
+
+extlinks = {
+    'pull': ('https://bitbucket.org/birkenfeld/sphinx-contrib/pull-request/%s/',
+             'pull request #'),
+    'issue': ('https://bitbucket.org/birkenfeld/sphinx-contrib/issue/%s/',
+              'issue #')
 }

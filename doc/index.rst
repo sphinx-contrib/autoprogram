@@ -113,6 +113,14 @@ __ https://bitbucket.org/birkenfeld/sphinx-contrib
 Changelog
 ---------
 
+Version 0.1.2
+`````````````
+
+To be released.
+
+- Fixed crash with empty fields.  [:issue:`110`]
+
+
 Version 0.1.1
 `````````````
 

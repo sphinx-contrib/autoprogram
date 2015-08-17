@@ -128,7 +128,7 @@ class AutoprogramDirective(Directive):
             yield title
             yield ('!' if commands else '?') * len(title)
             yield ''
-            yield desc
+            yield desc or ''
             yield ''
             yield parser.format_usage()
             yield ''
@@ -139,7 +139,7 @@ class AutoprogramDirective(Directive):
                 yield ''
             yield ''
             for line in epilog.splitlines():
-                yield line
+                yield line or ''
 
     def run(self):
         node = nodes.section()
@@ -252,22 +252,23 @@ class ScannerTestCase(unittest.TestCase):
         self.assertEqual((['n'], 'An integer for the accumulator.'),
                          options[0])
 
-
     def test_choices(self):
         parser = argparse.ArgumentParser()
         parser.add_argument("--awesomeness", choices=["meh", "awesome"])
         program, options, desc, _ = list(scan_programs(parser))[0]
         log_option = options[1]
-        self.assertEqual((["--awesomeness {meh,awesome}"],''), log_option)
-
+        self.assertEqual((["--awesomeness {meh,awesome}"], ''), log_option)
 
     def test_parse_epilog(self):
-        parser = argparse.ArgumentParser(description='Process some integers.', epilog='The integers will be processed.')
+        parser = argparse.ArgumentParser(
+            description='Process some integers.',
+            epilog='The integers will be processed.'
+        )
         programs = scan_programs(parser)
         programs = list(programs)
         self.assertEqual(1, len(programs))
         parser_data, = programs
-        program, options, desc, epilog = parser_data 
+        program, options, desc, epilog = parser_data
         self.assertEqual('The integers will be processed.', epilog)
 
 
