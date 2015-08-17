@@ -70,7 +70,7 @@ def import_object(import_name):
     module_name, expr = import_name.split(':', 1)
     try:
         mod = __import__(module_name)
-    except:
+    except ImportError:
         # This happens if the file is a script with no .py extension. Here we
         # trick autoprogram to load a module in memory with the contents of
         # the script, if there is a script named module_name. Otherwise, raise
@@ -99,7 +99,7 @@ def import_object(import_name):
                 found = True
                 break
         if not found:
-            raise(ImportError, "No module named {}".format(module_name))
+            raise ImportError("No module named {}".format(module_name))
 
     reduce_ = getattr(functools, 'reduce', None) or reduce
     mod = reduce_(getattr, module_name.split('.')[1:], mod)
