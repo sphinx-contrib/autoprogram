@@ -119,6 +119,8 @@ Version 0.1.2
 To be released.
 
 - Fixed crash with empty fields.  [:issue:`110`]
+- Fixed :exc:`ImportError` with non-module Python scripts (i.e. files not
+  ending with :file:`.py`).  [:pull:`101` by Matteo Bachetti]
 
 
 Version 0.1.1
