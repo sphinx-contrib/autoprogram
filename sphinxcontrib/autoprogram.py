@@ -80,7 +80,7 @@ def import_object(import_name):
         import sys
         import os
         import imp
-        found = False
+
         for p in sys.path:
             f = glob.glob(os.path.join(p, module_name))
             if len(f) > 0:
@@ -91,9 +91,8 @@ def import_object(import_name):
 
                 sys.modules["foo"] = foo
                 mod = __import__("foo")
-                found = True
                 break
-        if not found:
+        else:
             raise ImportError("No module named {}".format(module_name))
 
     reduce_ = getattr(functools, 'reduce', None) or reduce
