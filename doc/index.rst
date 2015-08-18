@@ -116,7 +116,7 @@ Changelog
 Version 0.1.2
 `````````````
 
-To be released.
+Released on August 18, 2015.
 
 - Fixed crash with empty fields.  [:issue:`110`]
 - Fixed :exc:`ImportError` with non-module Python scripts (i.e. files not
