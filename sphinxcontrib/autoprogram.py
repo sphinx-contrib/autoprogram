@@ -16,9 +16,11 @@ try:
 except ImportError:
     import __builtin__ as builtins
 import functools
+import os
 import re
-import unittest
 import six
+import textwrap
+import unittest
 
 from docutils import nodes
 from docutils.parsers.rst.directives import unchanged
@@ -31,7 +33,21 @@ __all__ = ('BOOLEAN_OPTIONS', 'AutoprogramDirective', 'ScannerTestCase',
            'import_object', 'scan_programs', 'setup', 'suite')
 
 
-def scan_programs(parser, command=[]):
+def get_subparser_action(parser):
+    neg1_action = parser._actions[-1]
+
+    if isinstance(neg1_action, argparse._SubParsersAction):
+        return neg1_action
+
+    for a in parser._actions:
+        if isinstance(a, argparse._SubParsersAction):
+            return a
+
+
+def scan_programs(parser, command=[], maxdepth=0, depth=0):
+    if maxdepth and depth >= maxdepth:
+        return
+
     options = []
     for arg in parser._actions:
         if not (arg.option_strings or
@@ -39,14 +55,26 @@ def scan_programs(parser, command=[]):
             name = (arg.metavar or arg.dest).lower()
             desc = (arg.help or '') % {'default': arg.default}
             options.append(([name], desc))
+
     for arg in parser._actions:
         if arg.option_strings:
             if isinstance(arg, (argparse._StoreAction,
                                 argparse._AppendAction)):
                 if arg.choices is None:
-                    metavar = (arg.metavar or arg.dest).lower()
-                    names = ['{0} <{1}>'.format(option_string, metavar)
-                             for option_string in arg.option_strings]
+                    metavar = arg.metavar or arg.dest
+
+                    if isinstance(metavar, tuple):
+                        names = [
+                            '{0} <{1}>'.format(
+                                option_string, '> <'.join(metavar).lower()
+                            )
+                            for option_string in arg.option_strings
+                        ]
+                    else:
+                        names = [
+                            '{0} <{1}>'.format(option_string, metavar.lower())
+                            for option_string in arg.option_strings
+                        ]
                 else:
                     choices = '{0}'.format(','.join(arg.choices))
                     names = ['{0} {{{1}}}'.format(option_string, choices)
@@ -55,15 +83,26 @@ def scan_programs(parser, command=[]):
                 names = list(arg.option_strings)
             desc = (arg.help or '') % {'default': arg.default}
             options.append((names, desc))
-    yield command, options, parser.description, parser.epilog or ''
+
+    yield command, options, parser
+
     if parser._subparsers:
-        choices = parser._subparsers._actions[-1].choices.items()
+        choices = ()
+
+        subp_action = get_subparser_action(parser)
+
+        if subp_action:
+            choices = subp_action.choices.items()
+
         if not (hasattr(collections, 'OrderedDict') and
                 isinstance(choices, collections.OrderedDict)):
             choices = sorted(choices, key=lambda pair: pair[0])
+
         for cmd, sub in choices:
             if isinstance(sub, argparse.ArgumentParser):
-                for program in scan_programs(sub, command + [cmd]):
+                for program in scan_programs(
+                    sub, command + [cmd], maxdepth, depth + 1
+                ):
                     yield program
 
 
@@ -107,32 +146,84 @@ class AutoprogramDirective(Directive):
 
     has_content = False
     required_arguments = 1
-    option_spec = {'prog': unchanged}
+    option_spec = {
+        'prog': unchanged,
+        'maxdepth': unchanged,
+        'start_command': unchanged,
+        'strip_usage': unchanged,
+        'no_usage_codeblock': unchanged,
+    }
 
     def make_rst(self):
         import_name, = self.arguments
         parser = import_object(import_name or '__undefined__')
         parser.prog = self.options.get('prog', parser.prog)
-        for commands, options, desc, epilog in scan_programs(parser):
-            command = ' '.join(commands)
-            title = '{0} {1}'.format(parser.prog, command).rstrip()
+        start_command = self.options.get('start_command', '').split(' ')
+        strip_usage = 'strip_usage' in self.options
+        usage_codeblock = 'no_usage_codeblock' in self.options
+
+        if start_command[0] == '':
+            start_command.pop(0)
+
+        if start_command:
+            def get_start_cmd_parser(p):
+                looking_for = start_command.pop(0)
+                action = get_subparser_action(p)
+
+                if not action:
+                    raise ValueError('No actions for command ' + looking_for)
+
+                subp = action.choices[looking_for]
+
+                if start_command:
+                    return get_start_cmd_parser(subp)
+
+                return subp
+
+            parser = get_start_cmd_parser(parser)
+
+        for commands, options, cmd_parser in scan_programs(
+            parser, maxdepth=int(self.options.get('maxdepth', 0))
+        ):
+            title = cmd_parser.prog.rstrip()
+            usage = cmd_parser.format_usage()
+
+            if strip_usage:
+                to_strip = title.rsplit(' ', 1)[0]
+                len_to_strip = len(to_strip) - 3
+                usage_lines = usage.splitlines()
+
+                usage = os.linesep.join([
+                    usage_lines[0].replace(to_strip, '...'),
+                ] + [
+                    l[len_to_strip:] for l in usage_lines[1:]
+                ])
+
             yield ''
             yield '.. program:: ' + title
             yield ''
             yield title
             yield ('!' if commands else '?') * len(title)
             yield ''
-            yield desc or ''
+            yield cmd_parser.description or ''
             yield ''
-            yield parser.format_usage()
+
+            if usage_codeblock:
+                yield '.. code-block:: console'
+                yield ''
+                yield textwrap.indent(usage, '    ')
+            else:
+                yield usage
+
             yield ''
+
             for option_strings, help_ in options:
                 yield '.. option:: {0}'.format(', '.join(option_strings))
                 yield ''
                 yield '   ' + help_.replace('\n', '   \n')
                 yield ''
             yield ''
-            for line in epilog.splitlines():
+            for line in (cmd_parser.epilog or '').splitlines():
                 yield line or ''
 
     def run(self):
@@ -175,14 +266,16 @@ class ScannerTestCase(unittest.TestCase):
         parser.add_argument('--sum', dest='accumulate', action='store_const',
                             const=sum, default=max,
                             help='sum the integers (default: find the max)')
+        parser.add_argument('--key-value', metavar=('KEY', 'VALUE'), nargs=2)
+
         programs = scan_programs(parser)
         programs = list(programs)
         self.assertEqual(1, len(programs))
         parser_info, = programs
-        program, options, desc, _ = parser_info
+        program, options, cmd_parser = parser_info
         self.assertEqual([], program)
-        self.assertEqual('Process some integers.', desc)
-        self.assertEqual(4, len(options))
+        self.assertEqual('Process some integers.', cmd_parser.description)
+        self.assertEqual(5, len(options))
         self.assertEqual(
             (['n'], 'an integer for the accumulator'),
             options[0]
@@ -199,6 +292,10 @@ class ScannerTestCase(unittest.TestCase):
         self.assertEqual(
             (['--sum'], 'sum the integers (default: find the max)'),
             options[3]
+        )
+        self.assertEqual(
+            (['--key-value <key> <value>', ], ''),
+            options[4]
         )
 
     def test_subcommands(self):
@@ -217,9 +314,9 @@ class ScannerTestCase(unittest.TestCase):
         programs = list(programs)
         self.assertEqual(3, len(programs))
         # main
-        program, options, desc, _ = programs[0]
+        program, options, cmd_parser = programs[0]
         self.assertEqual([], program)
-        self.assertEqual('Process some integers.', desc)
+        self.assertEqual('Process some integers.', cmd_parser.description)
         self.assertEqual(1, len(options))
         self.assertEqual(
             (['-h', '--help'],
@@ -227,9 +324,9 @@ class ScannerTestCase(unittest.TestCase):
             options[0]
         )
         # max
-        program, options, desc, _ = programs[1]
+        program, options, cmd_parser = programs[1]
         self.assertEqual(['max'], program)
-        self.assertEqual('Find the max.', desc)
+        self.assertEqual('Find the max.', cmd_parser.description)
         self.assertEqual(2, len(options))
         self.assertEqual((['n'], 'An integer for the accumulator.'),
                          options[0])
@@ -239,9 +336,9 @@ class ScannerTestCase(unittest.TestCase):
             options[1]
         )
         # sum
-        program, options, desc, _ = programs[2]
+        program, options, cmd_parser = programs[2]
         self.assertEqual(['sum'], program)
-        self.assertEqual('Sum the integers.', desc)
+        self.assertEqual('Sum the integers.', cmd_parser.description)
         self.assertEqual(2, len(options))
         self.assertEqual((['n'], 'An integer for the accumulator.'),
                          options[0])
@@ -249,7 +346,7 @@ class ScannerTestCase(unittest.TestCase):
     def test_choices(self):
         parser = argparse.ArgumentParser()
         parser.add_argument("--awesomeness", choices=["meh", "awesome"])
-        program, options, desc, _ = list(scan_programs(parser))[0]
+        program, options, cmd_parser = list(scan_programs(parser))[0]
         log_option = options[1]
         self.assertEqual((["--awesomeness {meh,awesome}"], ''), log_option)
 
@@ -262,8 +359,8 @@ class ScannerTestCase(unittest.TestCase):
         programs = list(programs)
         self.assertEqual(1, len(programs))
         parser_data, = programs
-        program, options, desc, epilog = parser_data
-        self.assertEqual('The integers will be processed.', epilog)
+        program, options, cmd_parser = parser_data
+        self.assertEqual('The integers will be processed.', cmd_parser.epilog)
 
 
 class UtilTestCase(unittest.TestCase):

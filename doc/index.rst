@@ -91,6 +91,24 @@ The above reStructuredText will render:
 .. _prog: http://docs.python.org/library/argparse.html#prog
 
 
+Additional Options for :rst:dir:`.. autoprogram::`
+--------------------------------------------------
+
+``:maxdepth: ##``
+    Only show subcommands to a depth of ``##``
+
+``:no_usage_codeblock:``
+    Don't put the usage text in a ``.. codeblock:: console`` directive.
+
+``:start_command: subcommand``
+    Render document for the given subcommand. ``subcommand`` can be a space
+    separated list to render a sub-sub-...-command. 
+    
+``:strip_usage:``
+    Removes all but the last word in the usage string before the first option,
+    replaces it with '...', and removes an amount of whitespace to realign
+    subsequent lines.
+
 Author and license
 ------------------
 
@@ -112,6 +130,16 @@ __ https://bitbucket.org/birkenfeld/sphinx-contrib
 
 Changelog
 ---------
+
+Version 0.1.3
+`````````````
+
+- Fixed crash when metavars is a tuple (ie. for ``nargs > 1``)
+- Fixed usage string for subcommands (subcommands were previously showing
+  the top-level command usage).
+- Added new options to ``.. autoprogram::``
+    
+    ``maxdepth``, ``no_usage_codeblock``, ``start_command``, and ``strip_usage``
 
 Version 0.1.2
 `````````````
