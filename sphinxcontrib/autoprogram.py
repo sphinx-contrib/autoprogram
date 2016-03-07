@@ -160,7 +160,7 @@ class AutoprogramDirective(Directive):
         parser.prog = self.options.get('prog', parser.prog)
         start_command = self.options.get('start_command', '').split(' ')
         strip_usage = 'strip_usage' in self.options
-        usage_codeblock = 'no_usage_codeblock' in self.options
+        usage_codeblock = 'no_usage_codeblock' not in self.options
 
         if start_command[0] == '':
             start_command.pop(0)
@@ -190,7 +190,7 @@ class AutoprogramDirective(Directive):
 
             if strip_usage:
                 to_strip = title.rsplit(' ', 1)[0]
-                len_to_strip = len(to_strip) - 3
+                len_to_strip = len(to_strip) - 4
                 usage_lines = usage.splitlines()
 
                 usage = os.linesep.join([
