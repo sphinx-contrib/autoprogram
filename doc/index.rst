@@ -94,6 +94,8 @@ The above reStructuredText will render:
 Additional Options for :rst:dir:`.. autoprogram::`
 --------------------------------------------------
 
+.. versionadded:: 0.1.13
+
 ``:maxdepth: ##``
     Only show subcommands to a depth of ``##``
 
