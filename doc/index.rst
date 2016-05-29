@@ -126,7 +126,7 @@ the repository).
    $ hg clone https://bitbucket.org/birkenfeld/sphinx-contrib
    $ cd sphinx-contrib/autoprogram/
 
-__ http://dahlia.kr/
+__ https://hongminhee.org/
 __ https://bitbucket.org/birkenfeld/sphinx-contrib
 
 
