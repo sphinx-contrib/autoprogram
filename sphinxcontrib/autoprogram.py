@@ -205,7 +205,8 @@ class AutoprogramDirective(Directive):
             yield title
             yield ('!' if commands else '?') * len(title)
             yield ''
-            yield cmd_parser.description or ''
+            for line in (cmd_parser.description or '').splitlines():
+                yield line
             yield ''
 
             if usage_codeblock:
