@@ -157,7 +157,10 @@ class AutoprogramDirective(Directive):
     def make_rst(self):
         import_name, = self.arguments
         parser = import_object(import_name or '__undefined__')
-        parser.prog = self.options.get('prog', parser.prog)
+        prog = self.options.get('prog')
+        if prog:
+            original_prog = parser.prog
+            parser.prog = prog
         start_command = self.options.get('start_command', '').split(' ')
         strip_usage = 'strip_usage' in self.options
         usage_codeblock = 'no_usage_codeblock' not in self.options
@@ -181,10 +184,15 @@ class AutoprogramDirective(Directive):
                 return subp
 
             parser = get_start_cmd_parser(parser)
+            if prog and parser.prog.startswith(original_prog):
+                parser.prog = parser.prog.replace(original_prog, prog, 1)
 
         for commands, options, cmd_parser in scan_programs(
             parser, maxdepth=int(self.options.get('maxdepth', 0))
         ):
+            if prog and cmd_parser.prog.startswith(original_prog):
+                cmd_parser.prog = cmd_parser.prog.replace(
+                    original_prog, prog, 1)
             title = cmd_parser.prog.rstrip()
             usage = cmd_parser.format_usage()
 
