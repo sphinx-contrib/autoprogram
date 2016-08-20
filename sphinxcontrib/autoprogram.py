@@ -184,13 +184,13 @@ class AutoprogramDirective(Directive):
                 return subp
 
             parser = get_start_cmd_parser(parser)
-            if prog:
+            if prog and parser.prog.startswith(original_prog):
                 parser.prog = parser.prog.replace(original_prog, prog, 1)
 
         for commands, options, cmd_parser in scan_programs(
             parser, maxdepth=int(self.options.get('maxdepth', 0))
         ):
-            if prog:
+            if prog and cmd_parser.prog.startswith(original_prog):
                 cmd_parser.prog = cmd_parser.prog.replace(
                     original_prog, prog, 1)
             title = cmd_parser.prog.rstrip()
