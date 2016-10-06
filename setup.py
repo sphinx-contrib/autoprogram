@@ -26,7 +26,7 @@ setup(
     url='https://bitbucket.org/birkenfeld/sphinx-contrib',
     license='BSD',
     author='Hong Minhee',
-    author_email='hongminhee' '@' 'member.fsf.org',
+    author_email='\x68\x6f\x6e\x67.minhee' '@' '\x67\x6d\x61\x69\x6c.com',
     description='Documenting CLI programs',
     long_description=readme(),
     zip_safe=False,
