@@ -139,7 +139,7 @@ Changelog
 Version 0.1.3
 `````````````
 
-To be released.
+Released on October 7, 2016.
 
 - Fixed crash when metavars is a tuple (i.e. for ``nargs > 1``).
   [:pull:`112` by Alex Honeywell]
