@@ -147,6 +147,8 @@ Version 0.1.3
 
 Released on October 7, 2016.
 
+- Fixed a bug that descriptions with :class:`~argparse.RawTextHelpFormatter`
+  had been incorrectly formatted.  [:pull:`123` by Aaron Meurer]
 - Fixed crash when metavars is a tuple (i.e. for ``nargs > 1``).
   [:pull:`112` by Alex Honeywell]
 - Fixed usage string for subcommands (subcommands were previously showing
