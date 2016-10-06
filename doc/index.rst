@@ -143,6 +143,10 @@ Version 0.1.3
     
     ``maxdepth``, ``no_usage_codeblock``, ``start_command``, and ``strip_usage``
 
+- Fixed suppressed arguments (using :const:`argparse.SUPPRESS` flag)
+  to become ignored.  [:issue:`166`]
+
+
 Version 0.1.2
 `````````````
 

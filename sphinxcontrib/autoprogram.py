@@ -57,7 +57,7 @@ def scan_programs(parser, command=[], maxdepth=0, depth=0):
             options.append(([name], desc))
 
     for arg in parser._actions:
-        if arg.option_strings:
+        if arg.option_strings and arg.help is not argparse.SUPPRESS:
             if isinstance(arg, (argparse._StoreAction,
                                 argparse._AppendAction)):
                 if arg.choices is None:
@@ -276,6 +276,7 @@ class ScannerTestCase(unittest.TestCase):
                             const=sum, default=max,
                             help='sum the integers (default: find the max)')
         parser.add_argument('--key-value', metavar=('KEY', 'VALUE'), nargs=2)
+        parser.add_argument('--max', help=argparse.SUPPRESS)  # must be opt-out
 
         programs = scan_programs(parser)
         programs = list(programs)
