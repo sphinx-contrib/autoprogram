@@ -91,16 +91,18 @@ The above reStructuredText will render:
 .. _prog: http://docs.python.org/library/argparse.html#prog
 
 
+.. _autoprogram-options:
+
 Additional Options for :rst:dir:`.. autoprogram::`
 --------------------------------------------------
 
-.. versionadded:: 0.1.13
+.. versionadded:: 0.1.3
 
 ``:maxdepth: ##``
-    Only show subcommands to a depth of ``##``
+    Only show subcommands to a depth of ``##``.
 
 ``:no_usage_codeblock:``
-    Don't put the usage text in a ``.. codeblock:: console`` directive.
+    Don't put the usage text in a :rst:dir:`.. codeblock:: console` directive.
 
 ``:start_command: subcommand``
     Render document for the given subcommand. ``subcommand`` can be a space
@@ -110,6 +112,7 @@ Additional Options for :rst:dir:`.. autoprogram::`
     Removes all but the last word in the usage string before the first option,
     replaces it with '...', and removes an amount of whitespace to realign
     subsequent lines.
+
 
 Author and license
 ------------------
@@ -136,12 +139,19 @@ Changelog
 Version 0.1.3
 `````````````
 
-- Fixed crash when metavars is a tuple (ie. for ``nargs > 1``)
+To be released.
+
+- Fixed crash when metavars is a tuple (i.e. for ``nargs > 1``).
+  [:pull:`112` by Alex Honeywell]
 - Fixed usage string for subcommands (subcommands were previously showing
-  the top-level command usage).
-- Added new options to ``.. autoprogram::``
+  the top-level command usage).  [:pull:`112` by Alex Honeywell]
+- Added :ref:`new options <autoprogram-options>` to :rst:dir:`.. autoprogram::`
+  directive:  [:pull:`112` by Alex Honeywell]
     
-    ``maxdepth``, ``no_usage_codeblock``, ``start_command``, and ``strip_usage``
+  - ``maxdepth``
+  - ``no_usage_codeblock``
+  - ``start_command``
+  - ``strip_usage``
 
 - Fixed suppressed arguments (using :const:`argparse.SUPPRESS` flag)
   to become ignored.  [:issue:`166`]
