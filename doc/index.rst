@@ -141,6 +141,10 @@ Version 0.1.4
 
 To be released.
 
+- Fixed a :rst:dir`.. autoprogram::` bug that raises :exc:`AttributeError`
+  during build without ``:no_usage_codeblock:`` option on Python 2.
+  [:issue:`168`, :issue:`169`]
+
 
 Version 0.1.3
 `````````````
