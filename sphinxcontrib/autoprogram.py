@@ -18,13 +18,13 @@ except ImportError:
 import functools
 import os
 import re
-import six
 import sys
 import unittest
 
 from docutils import nodes
 from docutils.parsers.rst.directives import unchanged
 from docutils.statemachine import StringList, ViewList
+from six import exec_
 from sphinx.util.compat import Directive
 from sphinx.util.nodes import nested_parse_with_titles
 from sphinx.domains import std
@@ -127,7 +127,7 @@ def import_object(import_name):
                 with open(f[0]) as fobj:
                     codestring = fobj.read()
                 foo = imp.new_module("foo")
-                six.exec_(codestring, foo.__dict__)
+                exec_(codestring, foo.__dict__)
 
                 sys.modules["foo"] = foo
                 mod = __import__("foo")
