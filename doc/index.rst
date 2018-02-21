@@ -144,6 +144,7 @@ To be released.
 - Fixed a :rst:dir`.. autoprogram::` bug that raises :exc:`AttributeError`
   during build without ``:no_usage_codeblock:`` option on Python 2.
   [:issue:`168`, :issue:`169`]
+- Fixed an issue with Sphinx 1.7 which removed ``sphinx.util.compat``
 
 
 Version 0.1.3
