@@ -55,6 +55,6 @@ setup(
     packages=find_packages(),
     namespace_packages=['sphinxcontrib'],
     include_package_data=True,
-    test_suite='sphinxcontrib.autoprogram.suite',
-    install_requires=requires
+    install_requires=requires,
+    test_suite='sphinxcontrib.autoprogram.suite'
 )

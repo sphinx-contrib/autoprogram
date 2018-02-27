@@ -11,29 +11,19 @@
 # pylint: disable=protected-access,missing-docstring
 import argparse
 import collections
-try:
-    import builtins
-except ImportError:
-    import __builtin__ as builtins
-import functools
 import os
 import re
 import sys
 import unittest
 
 from docutils import nodes
+from docutils.parsers.rst import Directive
 from docutils.parsers.rst.directives import unchanged
 from docutils.statemachine import StringList, ViewList
 from six import exec_
-from sphinx.util.nodes import nested_parse_with_titles
+from six.moves import builtins, reduce
 from sphinx.domains import std
-
-try:
-    # sphinx.util.compat.Directive class is now deprecated.
-    # Please use instead docutils.parsers.rst.Directive
-    from sphinx.util.compat import Directive
-except ImportError:
-    from docutils.parsers.rst import Directive
+from sphinx.util.nodes import nested_parse_with_titles
 
 __all__ = ('AutoprogramDirective',
            'AutoprogramDirectiveTestCase', 'ScannerTestCase',
@@ -141,8 +131,7 @@ def import_object(import_name):
         else:
             raise ImportError("No module named {}".format(module_name))
 
-    reduce_ = getattr(functools, 'reduce', None) or reduce
-    mod = reduce_(getattr, module_name.split('.')[1:], mod)
+    mod = reduce(getattr, module_name.split('.')[1:], mod)
     globals_ = builtins
     if not isinstance(globals_, dict):
         globals_ = globals_.__dict__
