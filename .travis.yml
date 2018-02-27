@@ -17,7 +17,7 @@ script:
   fi
 deploy:
   provider: pypi
-  distributions: 'release sdist bdist_wheel'
+  distributions: 'sdist bdist_wheel'
   on:
     tags: true
     python: 3.6
