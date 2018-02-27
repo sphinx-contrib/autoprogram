@@ -12,6 +12,10 @@
    :target: https://pypi.org/project/sphinxcontrib-autoprogram/
    :alt: Latest PyPI version
 
+.. image:: https://readthedocs.org/projects/sphinxcontrib-autoprogram/badge/
+   :target: https://sphinxcontrib-autoprogram.readthedocs.io/
+   :alt: Documentation Status
+
 .. image:: https://travis-ci.org/sphinx-contrib/autoprogram.svg?branch=master
    :alt: Build Status
    :target: https://travis-ci.org/sphinx-contrib/autoprogram

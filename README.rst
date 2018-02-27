@@ -1,9 +1,13 @@
-``sphinxcontrib.autoprogram`` --- Documenting CLI programs
-==========================================================
+``sphinxcontrib.autoprogram``
+=============================
 
 .. image:: https://badge.fury.io/py/sphinxcontrib-autoprogram.svg
    :target: https://pypi.org/project/sphinxcontrib-autoprogram/
    :alt: Latest PyPI version
+
+.. image:: https://readthedocs.org/projects/sphinxcontrib-autoprogram/badge/
+   :target: https://sphinxcontrib-autoprogram.readthedocs.io/
+   :alt: Documentation Status
 
 .. image:: https://travis-ci.org/sphinx-contrib/autoprogram.svg?branch=master
    :alt: Build Status
@@ -22,4 +26,4 @@ Install using ``pip``:
 
 You can find the documentation from the following URL:
 
-https://pythonhosted.org/sphinxcontrib-autoprogram/
+https://sphinxcontrib-autoprogram.readthedocs.io/
