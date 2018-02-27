@@ -4,3 +4,4 @@
 .cache/
 .tox/
 __pycache__/
+doc/_build/
