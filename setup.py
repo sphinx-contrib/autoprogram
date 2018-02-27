@@ -11,7 +11,7 @@ version = '0.1.4'
 
 requires = ['Sphinx >= 1.2', 'six']
 
-if sys.version_info < (2, 7):
+if 'bdist_wheel' not in sys.argv and sys.version_info < (2, 7):
     requires.append('argparse')
 
 
@@ -56,5 +56,6 @@ setup(
     namespace_packages=['sphinxcontrib'],
     include_package_data=True,
     install_requires=requires,
+    extras_requires={":python_version=='2.6'": ['argparse']},
     test_suite='sphinxcontrib.autoprogram.suite'
 )
