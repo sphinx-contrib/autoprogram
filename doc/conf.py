@@ -280,8 +280,16 @@ intersphinx_mapping = {
 
 
 extlinks = {
-    'pull': ('https://bitbucket.org/birkenfeld/sphinx-contrib/pull-request/%s/',
-             'pull request #'),
-    'issue': ('https://bitbucket.org/birkenfeld/sphinx-contrib/issue/%s/',
-              'issue #')
+    'issue': (
+        'https://github.com/sphinx-contrib/autoprogram/issues/%s',
+        '#'
+    ),
+    'bbpull': (
+        'https://bitbucket.org/birkenfeld/sphinx-contrib/pull-request/%s/',
+        'Bitbucket PR #',
+    ),
+    'bbissue': (
+        'https://bitbucket.org/birkenfeld/sphinx-contrib/issue/%s/',
+        'Bitbucket issue #',
+    ),
 }

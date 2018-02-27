@@ -117,20 +117,17 @@ Additional Options for :rst:dir:`.. autoprogram::`
 Author and license
 ------------------
 
-The :mod:`sphinxcontrib.autoprogram`, a part of :mod:`sphinxcontrib`,
-is written by `Hong Minhee`__ and distributed under BSD license.
+The :mod:`sphinxcontrib.autoprogram` is written by `Hong Minhee`__ and
+distributed under BSD license.
 
-The source code is mantained under `the common repository of contributed
-extensions for Sphinx`__ (find the :file:`autoprogram` directory inside
-the repository).
+The source code is maintained under the `GitHub repository`__:
 
 .. sourcecode:: console
 
-   $ hg clone https://bitbucket.org/birkenfeld/sphinx-contrib
-   $ cd sphinx-contrib/autoprogram/
+   $ git clone git://github.com/sphinx-contrib/autoprogram.git
 
 __ https://hongminhee.org/
-__ https://bitbucket.org/birkenfeld/sphinx-contrib
+__ https://github.com/sphinx-contrib/autoprogram
 
 
 Changelog
@@ -143,8 +140,9 @@ To be released.
 
 - Fixed a :rst:dir`.. autoprogram::` bug that raises :exc:`AttributeError`
   during build without ``:no_usage_codeblock:`` option on Python 2.
-  [:issue:`168`, :issue:`169`]
-- Fixed an issue with Sphinx 1.7 which removed ``sphinx.util.compat``
+  [:bbissue:`168`, :bbissue:`169`]
+- Fixed an issue with Sphinx 1.7 which removed ``sphinx.util.compat``.
+  [:issue:`1`, :issue:`2` by Zach Riggle]
 
 
 Version 0.1.3
@@ -153,13 +151,13 @@ Version 0.1.3
 Released on October 7, 2016.
 
 - Fixed a bug that descriptions with :class:`~argparse.RawTextHelpFormatter`
-  had been incorrectly formatted.  [:pull:`123` by Aaron Meurer]
+  had been incorrectly formatted.  [:bbpull:`123` by Aaron Meurer]
 - Fixed crash when metavars is a tuple (i.e. for ``nargs > 1``).
-  [:pull:`112` by Alex Honeywell]
+  [:bbpull:`112` by Alex Honeywell]
 - Fixed usage string for subcommands (subcommands were previously showing
-  the top-level command usage).  [:pull:`112` by Alex Honeywell]
+  the top-level command usage).  [:bbpull:`112` by Alex Honeywell]
 - Added :ref:`new options <autoprogram-options>` to :rst:dir:`.. autoprogram::`
-  directive:  [:pull:`112` by Alex Honeywell]
+  directive:  [:bbpull:`112` by Alex Honeywell]
     
   - ``maxdepth``
   - ``no_usage_codeblock``
@@ -167,7 +165,7 @@ Released on October 7, 2016.
   - ``strip_usage``
 
 - Fixed suppressed arguments (using :const:`argparse.SUPPRESS` flag)
-  to become ignored.  [:issue:`166`]
+  to become ignored.  [:bbissue:`166`]
 
 
 Version 0.1.2
@@ -175,9 +173,9 @@ Version 0.1.2
 
 Released on August 18, 2015.
 
-- Fixed crash with empty fields.  [:issue:`110`]
+- Fixed crash with empty fields.  [:bbissue:`110`]
 - Fixed :exc:`ImportError` with non-module Python scripts (i.e. files not
-  ending with :file:`.py`).  [:pull:`101` by Matteo Bachetti]
+  ending with :file:`.py`).  [:bbpull:`101` by Matteo Bachetti]
 
 
 Version 0.1.1

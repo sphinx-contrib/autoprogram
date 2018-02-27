@@ -23,7 +23,7 @@ def readme():
 setup(
     name='sphinxcontrib-autoprogram',
     version=version,
-    url='https://bitbucket.org/birkenfeld/sphinx-contrib',
+    url='https://github.com/sphinx-contrib/autoprogram',
     license='BSD',
     author='Hong Minhee',
     author_email='\x68\x6f\x6e\x67.minhee' '@' '\x67\x6d\x61\x69\x6c.com',
@@ -43,6 +43,7 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Programming Language :: Python :: Implementation :: Stackless',
