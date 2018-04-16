@@ -41,12 +41,19 @@ def get_subparser_action(parser):
             return a
 
 
-def scan_programs(parser, command=[], maxdepth=0, depth=0):
+def scan_programs(parser, command=[], maxdepth=0, depth=0, groups=False):
     if maxdepth and depth >= maxdepth:
         return
 
-    options = list(scan_options(parser._actions))
-    yield command, options, parser
+    if groups:
+        yield command, [], parser
+        for group in parser._action_groups:
+            options = list(scan_options(group._group_actions))
+            if options:
+                yield command, options, group
+    else:
+        options = list(scan_options(parser._actions))
+        yield command, options, parser
 
     if parser._subparsers:
         choices = ()
@@ -152,6 +159,7 @@ class AutoprogramDirective(Directive):
         'start_command': unchanged,
         'strip_usage': unchanged,
         'no_usage_codeblock': unchanged,
+        'groups': unchanged,
     }
 
     def make_rst(self):
@@ -165,6 +173,7 @@ class AutoprogramDirective(Directive):
         strip_usage = 'strip_usage' in self.options
         usage_codeblock = 'no_usage_codeblock' not in self.options
         maxdepth = int(self.options.get('maxdepth', 0))
+        groups = 'groups' in self.options
 
         if start_command[0] == '':
             start_command.pop(0)
@@ -188,21 +197,36 @@ class AutoprogramDirective(Directive):
             if prog and parser.prog.startswith(original_prog):
                 parser.prog = parser.prog.replace(original_prog, prog, 1)
 
-        for commands, options, cmd_parser in scan_programs(
-            parser, maxdepth=maxdepth
+        for commands, options, group_or_parser in scan_programs(
+            parser, maxdepth=maxdepth, groups=groups
         ):
-            if prog and cmd_parser.prog.startswith(original_prog):
-                cmd_parser.prog = cmd_parser.prog.replace(
-                    original_prog, prog, 1)
-            title = cmd_parser.prog.rstrip()
-            usage = cmd_parser.format_usage()
+            if isinstance(group_or_parser, argparse._ArgumentGroup):
+                title = group_or_parser.title
+                description = group_or_parser.description
+                usage = None
+                epilog = None
+                is_subgroup = True
+                is_program = False
+            else:
+                cmd_parser = group_or_parser
+                if prog and cmd_parser.prog.startswith(original_prog):
+                    cmd_parser.prog = cmd_parser.prog.replace(
+                        original_prog, prog, 1)
+                title = cmd_parser.prog.rstrip()
+                description = cmd_parser.description
+                usage = cmd_parser.format_usage()
+                epilog = cmd_parser.epilog
+                is_subgroup = bool(commands)
+                is_program = True
 
-            for line in render_rst(title, options, is_subcommand=bool(commands),
-                                   description=cmd_parser.description,
+            for line in render_rst(title, options,
+                                   is_program=is_program,
+                                   is_subgroup=is_subgroup,
+                                   description=description,
                                    usage=usage,
                                    usage_strip=strip_usage,
                                    usage_codeblock=usage_codeblock,
-                                   epilog=cmd_parser.epilog):
+                                   epilog=epilog):
                 yield line
 
     def run(self):
@@ -215,7 +239,7 @@ class AutoprogramDirective(Directive):
         return node.children
 
 
-def render_rst(title, options, is_subcommand, description,
+def render_rst(title, options, is_program, is_subgroup, description,
                usage, usage_strip, usage_codeblock, epilog):
     if usage_strip:
         to_strip = title.rsplit(' ', 1)[0]
@@ -229,16 +253,22 @@ def render_rst(title, options, is_subcommand, description,
         ])
 
     yield ''
-    yield '.. program:: ' + title
-    yield ''
+
+    if is_program:
+        yield '.. program:: ' + title
+        yield ''
+
     yield title
-    yield ('!' if is_subcommand else '?') * len(title)
+    yield ('!' if is_subgroup else '?') * len(title)
     yield ''
+
     for line in (description or '').splitlines():
         yield line
     yield ''
 
-    if usage_codeblock:
+    if usage is None:
+        pass
+    elif usage_codeblock:
         yield '.. code-block:: console'
         yield ''
         for usage_line in usage.splitlines():
@@ -253,7 +283,7 @@ def render_rst(title, options, is_subcommand, description,
         yield ''
         yield '   ' + help_.replace('\n', '   \n')
         yield ''
-    yield ''
+
     for line in (epilog or '').splitlines():
         yield line or ''
 
@@ -365,6 +395,53 @@ class ScannerTestCase(unittest.TestCase):
         self.assertEqual(2, len(options))
         self.assertEqual((['n'], 'An integer for the accumulator.'),
                          options[0])
+
+    def test_argument_groups(self):
+        parser = argparse.ArgumentParser(description='This is a program.')
+        parser.add_argument('-v', action='store_true',
+                            help='A global argument')
+        plain_group = parser.add_argument_group('Plain Options',
+                                                description='This is a group.')
+        plain_group.add_argument('--plain', action='store_true',
+                                 help='A plain argument.')
+        fancy_group = parser.add_argument_group('Fancy Options',
+                                                description='Another group.')
+        fancy_group.add_argument('fancy', type=int, help='Set the fancyness')
+
+        sections = list(scan_programs(parser, groups=True))
+        self.assertEqual(4, len(sections))
+
+        # section: unnamed
+        program, options, cmd_parser = sections[0]
+        self.assertEqual([], program)
+        self.assertEqual('This is a program.', cmd_parser.description)
+        self.assertEqual(0, len(options))
+
+        # section: default optionals
+        program, options, group = sections[1]
+        self.assertEqual([], program)
+        self.assertEqual('optional arguments', group.title)
+        self.assertEqual(None, group.description)
+        self.assertEqual(2, len(options))
+        self.assertEqual((['-h', '--help'], 'show this help message and exit'),
+                         options[0])
+        self.assertEqual((['-v'], 'A global argument'), options[1])
+
+        # section: Plain Options
+        program, options, group = sections[2]
+        self.assertEqual([], program)
+        self.assertEqual('Plain Options', group.title)
+        self.assertEqual('This is a group.', group.description)
+        self.assertEqual(1, len(options))
+        self.assertEqual((['--plain'], 'A plain argument.'), options[0])
+
+        # section: Fancy Options
+        program, options, group = sections[3]
+        self.assertEqual([], program)
+        self.assertEqual('Fancy Options', group.title)
+        self.assertEqual('Another group.', group.description)
+        self.assertEqual(1, len(options))
+        self.assertEqual((['fancy'], 'Set the fancyness'), options[0])
 
     def test_choices(self):
         parser = argparse.ArgumentParser()
