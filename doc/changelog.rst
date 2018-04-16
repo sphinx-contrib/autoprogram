@@ -6,6 +6,8 @@ Version 0.1.5
 
 To be released.
 
+- New ``:groups:`` option to render argument groups. [by Lukas Atkinson]
+
 
 Version 0.1.4
 -------------
