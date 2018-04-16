@@ -164,6 +164,7 @@ class AutoprogramDirective(Directive):
         start_command = self.options.get('start_command', '').split(' ')
         strip_usage = 'strip_usage' in self.options
         usage_codeblock = 'no_usage_codeblock' not in self.options
+        maxdepth = int(self.options.get('maxdepth', 0))
 
         if start_command[0] == '':
             start_command.pop(0)
@@ -188,7 +189,7 @@ class AutoprogramDirective(Directive):
                 parser.prog = parser.prog.replace(original_prog, prog, 1)
 
         for commands, options, cmd_parser in scan_programs(
-            parser, maxdepth=int(self.options.get('maxdepth', 0))
+            parser, maxdepth=maxdepth
         ):
             if prog and cmd_parser.prog.startswith(original_prog):
                 cmd_parser.prog = cmd_parser.prog.replace(
@@ -196,45 +197,13 @@ class AutoprogramDirective(Directive):
             title = cmd_parser.prog.rstrip()
             usage = cmd_parser.format_usage()
 
-            if strip_usage:
-                to_strip = title.rsplit(' ', 1)[0]
-                len_to_strip = len(to_strip) - 4
-                usage_lines = usage.splitlines()
-
-                usage = os.linesep.join([
-                    usage_lines[0].replace(to_strip, '...'),
-                ] + [
-                    l[len_to_strip:] for l in usage_lines[1:]
-                ])
-
-            yield ''
-            yield '.. program:: ' + title
-            yield ''
-            yield title
-            yield ('!' if commands else '?') * len(title)
-            yield ''
-            for line in (cmd_parser.description or '').splitlines():
+            for line in render_rst(title, options, is_subcommand=bool(commands),
+                                   description=cmd_parser.description,
+                                   usage=usage,
+                                   usage_strip=strip_usage,
+                                   usage_codeblock=usage_codeblock,
+                                   epilog=cmd_parser.epilog):
                 yield line
-            yield ''
-
-            if usage_codeblock:
-                yield '.. code-block:: console'
-                yield ''
-                for usage_line in usage.splitlines():
-                    yield '   ' + usage_line
-            else:
-                yield usage
-
-            yield ''
-
-            for option_strings, help_ in options:
-                yield '.. option:: {0}'.format(', '.join(option_strings))
-                yield ''
-                yield '   ' + help_.replace('\n', '   \n')
-                yield ''
-            yield ''
-            for line in (cmd_parser.epilog or '').splitlines():
-                yield line or ''
 
     def run(self):
         node = nodes.section()
@@ -244,6 +213,49 @@ class AutoprogramDirective(Directive):
             result.append(line, '<autoprogram>')
         nested_parse_with_titles(self.state, result, node)
         return node.children
+
+
+def render_rst(title, options, is_subcommand, description,
+               usage, usage_strip, usage_codeblock, epilog):
+    if usage_strip:
+        to_strip = title.rsplit(' ', 1)[0]
+        len_to_strip = len(to_strip) - 4
+        usage_lines = usage.splitlines()
+
+        usage = os.linesep.join([
+            usage_lines[0].replace(to_strip, '...'),
+        ] + [
+            l[len_to_strip:] for l in usage_lines[1:]
+        ])
+
+    yield ''
+    yield '.. program:: ' + title
+    yield ''
+    yield title
+    yield ('!' if is_subcommand else '?') * len(title)
+    yield ''
+    for line in (description or '').splitlines():
+        yield line
+    yield ''
+
+    if usage_codeblock:
+        yield '.. code-block:: console'
+        yield ''
+        for usage_line in usage.splitlines():
+            yield '   ' + usage_line
+    else:
+        yield usage
+
+    yield ''
+
+    for option_strings, help_ in options:
+        yield '.. option:: {0}'.format(', '.join(option_strings))
+        yield ''
+        yield '   ' + help_.replace('\n', '   \n')
+        yield ''
+    yield ''
+    for line in (epilog or '').splitlines():
+        yield line or ''
 
 
 def patch_option_role_to_allow_argument_form():
