@@ -45,42 +45,7 @@ def scan_programs(parser, command=[], maxdepth=0, depth=0):
     if maxdepth and depth >= maxdepth:
         return
 
-    options = []
-    for arg in parser._actions:
-        if not (arg.option_strings or
-                isinstance(arg, argparse._SubParsersAction)):
-            name = (arg.metavar or arg.dest).lower()
-            desc = (arg.help or '') % {'default': arg.default}
-            options.append(([name], desc))
-
-    for arg in parser._actions:
-        if arg.option_strings and arg.help is not argparse.SUPPRESS:
-            if isinstance(arg, (argparse._StoreAction,
-                                argparse._AppendAction)):
-                if arg.choices is None:
-                    metavar = arg.metavar or arg.dest
-
-                    if isinstance(metavar, tuple):
-                        names = [
-                            '{0} <{1}>'.format(
-                                option_string, '> <'.join(metavar).lower()
-                            )
-                            for option_string in arg.option_strings
-                        ]
-                    else:
-                        names = [
-                            '{0} <{1}>'.format(option_string, metavar.lower())
-                            for option_string in arg.option_strings
-                        ]
-                else:
-                    choices = '{0}'.format(','.join(arg.choices))
-                    names = ['{0} {{{1}}}'.format(option_string, choices)
-                             for option_string in arg.option_strings]
-            else:
-                names = list(arg.option_strings)
-            desc = (arg.help or '') % {'default': arg.default}
-            options.append((names, desc))
-
+    options = list(scan_options(parser._actions))
     yield command, options, parser
 
     if parser._subparsers:
@@ -101,6 +66,45 @@ def scan_programs(parser, command=[], maxdepth=0, depth=0):
                     sub, command + [cmd], maxdepth, depth + 1
                 ):
                     yield program
+
+
+def scan_options(actions):
+    for arg in actions:
+        if not (arg.option_strings or
+                isinstance(arg, argparse._SubParsersAction)):
+            yield format_positional_argument(arg)
+
+    for arg in actions:
+        if arg.option_strings and arg.help is not argparse.SUPPRESS:
+            yield format_option(arg)
+
+
+def format_positional_argument(arg):
+    desc = (arg.help or '') % {'default': arg.default}
+    name = (arg.metavar or arg.dest).lower()
+    return [name], desc
+
+
+def format_option(arg):
+    desc = (arg.help or '') % {'default': arg.default}
+
+    if not isinstance(arg, (argparse._StoreAction, argparse._AppendAction)):
+        names = list(arg.option_strings)
+        return names, desc
+
+    if arg.choices is not None:
+        value = '{{{0}}}'.format(','.join(arg.choices))
+    else:
+        metavar = arg.metavar or arg.dest
+        if not isinstance(metavar, tuple):
+            metavar = metavar,
+        value = '<{0}>'.format('> <'.join(metavar).lower())
+
+    names = ['{0} {1}'.format(option_string, value)
+             for option_string in arg.option_strings]
+
+    return names, desc
+
 
 
 def import_object(import_name):
