@@ -62,7 +62,7 @@ That's it.  It will be rendered as:
        :prog: cli.py
 
 If there are subcommands (subparsers), they are rendered to subsections.
-For example, givem the following Python CLI program (say it's
+For example, given the following Python CLI program (say it's
 :file:`subcmds.py`):
 
 .. include:: subcmds.py
@@ -77,6 +77,25 @@ The above reStructuredText will render:
 
     .. autoprogram:: subcmds:parser
        :prog: subcmds.py
+
+If there are argument groups, they can optionally be rendered as subsections,
+just like subcommands.
+For example:
+
+.. include:: cli_with_groups.py
+    :code:
+
+.. code-block:: rst
+
+    .. autoprogram:: cli_with_groups:parser
+        :prog: cli_with_groups.py
+        :groups:
+
+The above reStructuredText Text will render:
+
+    .. autoprogram:: cli_with_groups:parser
+        :prog: cli_with_groups.py
+        :groups:
 
 .. rst:directive:: .. autoprogram:: module:parser
 
@@ -108,22 +127,33 @@ The above reStructuredText will render:
 Additional Options for :rst:dir:`.. autoprogram::`
 --------------------------------------------------
 
-.. versionadded:: 0.1.3
+``:groups:``
+    Render argument groups as subsections.
+
+    .. versionadded:: 0.1.5
 
 ``:maxdepth: ##``
     Only show subcommands to a depth of ``##``.
 
+    .. versionadded:: 0.1.3
+
 ``:no_usage_codeblock:``
     Don't put the usage text in a :rst:dir:`.. codeblock:: console` directive.
+
+    .. versionadded:: 0.1.3
 
 ``:start_command: subcommand``
     Render document for the given subcommand. ``subcommand`` can be a space
     separated list to render a sub-sub-...-command. 
-    
+
+    .. versionadded:: 0.1.3
+
 ``:strip_usage:``
     Removes all but the last word in the usage string before the first option,
     replaces it with '...', and removes an amount of whitespace to realign
     subsequent lines.
+
+    .. versionadded:: 0.1.3
 
 
 Author and license
