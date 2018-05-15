@@ -4,7 +4,7 @@ Changelog
 Version 0.1.5
 -------------
 
-To be released.
+Released on May 15, 2018.
 
 - New ``:groups:`` option to render argument groups. [by Lukas Atkinson]
 
