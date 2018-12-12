@@ -24,7 +24,7 @@ setup(
     name='sphinxcontrib-autoprogram',
     version=version,
     url='https://github.com/sphinx-contrib/autoprogram',
-    license='BSD',
+    license='2-Clause BSD',
     author='Hong Minhee',
     author_email='\x68\x6f\x6e\x67.minhee' '@' '\x67\x6d\x61\x69\x6c.com',
     description='Documenting CLI programs',
