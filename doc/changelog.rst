@@ -6,6 +6,8 @@ Version 0.1.6
 
 To be released.
 
+- New option ``label`` to add a label/anchor that can be referenced with ``:ref:``.
+
 
 Version 0.1.5
 -------------

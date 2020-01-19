@@ -132,6 +132,16 @@ Additional Options for :rst:dir:`.. autoprogram::`
 
     .. versionadded:: 0.1.5
 
+
+``:label: prefix``
+    Adds a label/anchor that can be referenced with ``:ref:``.
+
+    If the parser has multiple subcommands, each subcommand generates one
+    reference. Each subcommand reference is created as a concatenation from
+		``prefix`` and ``subcommand``.
+
+    .. versionadded:: 0.1.6
+
 ``:maxdepth: ##``
     Only show subcommands to a depth of ``##``.
 
