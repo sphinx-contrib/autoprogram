@@ -100,7 +100,7 @@ def format_option(arg):
         return names, desc
 
     if arg.choices is not None:
-        value = '{{{0}}}'.format(','.join(arg.choices))
+        value = '{{{0}}}'.format(','.join(str(c) for c in arg.choices))
     else:
         metavar = arg.metavar or arg.dest
         if not isinstance(metavar, tuple):
