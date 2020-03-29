@@ -56,6 +56,6 @@ setup(
     namespace_packages=['sphinxcontrib'],
     include_package_data=True,
     install_requires=requires,
-    extras_requires={":python_version=='2.6'": ['argparse']},
+    extras_require={":python_version=='2.6'": ['argparse']},
     test_suite='sphinxcontrib.autoprogram.suite'
 )
