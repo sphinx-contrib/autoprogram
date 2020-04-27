@@ -160,6 +160,7 @@ class AutoprogramDirective(Directive):
         'strip_usage': unchanged,
         'no_usage_codeblock': unchanged,
         'groups': unchanged,
+        'label': unchanged,
     }
 
     def make_rst(self):
@@ -257,6 +258,11 @@ def render_rst(title, options, is_program, is_subgroup, description,
     if is_program:
         yield '.. program:: ' + title
         yield ''
+
+    if 'label' in options:
+        label = (options.get('label') + title).replace(" ", "-")
+        yield ".. _{label}:".format(label=label)
+        yield ""
 
     yield title
     yield ('!' if is_subgroup else '?') * len(title)
