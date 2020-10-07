@@ -6,6 +6,8 @@ Version 0.1.6
 
 To be released.
 
+- Declare this extension safe for parallel reading
+
 
 Version 0.1.5
 -------------

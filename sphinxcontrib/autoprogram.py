@@ -304,6 +304,10 @@ def patch_option_role_to_allow_argument_form():
 def setup(app):
     app.add_directive('autoprogram', AutoprogramDirective)
     patch_option_role_to_allow_argument_form()
+    return {
+        'parallel_read_safe': True,
+        'parallel_write_safe': True,
+    }
 
 
 class ScannerTestCase(unittest.TestCase):
