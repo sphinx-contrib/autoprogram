@@ -140,7 +140,7 @@ def import_object(import_name):
                 mod = __import__("foo")
                 break
         else:
-            raise ImportError("No module named {}".format(module_name))
+            raise
 
     mod = reduce(getattr, module_name.split('.')[1:], mod)
     globals_ = builtins
