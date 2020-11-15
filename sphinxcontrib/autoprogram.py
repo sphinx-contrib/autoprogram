@@ -11,6 +11,7 @@
 # pylint: disable=protected-access,missing-docstring
 import argparse
 import collections
+import inspect
 import os
 import re
 import sys
@@ -280,7 +281,7 @@ def render_rst(
     yield ("!" if is_subgroup else "?") * len(title)
     yield ""
 
-    for line in (description or "").splitlines():
+    for line in inspect.cleandoc(description or "").splitlines():
         yield line
     yield ""
 
