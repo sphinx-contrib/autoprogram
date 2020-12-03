@@ -11,6 +11,8 @@ To be released.
 - Test against recent versions of Sphinx [:issue:`33`, :pull:`32` by Langston Barrett]
 - Format source code with Black [:issue:`30`, :pull:`32` by Langston Barrett]
 - Add documentation to the ``sdist`` [:issue:`26`, :pull:`32` by Langston Barrett]
+- Fixed unwanted ``<blockquote>`` tags in multi-line command descriptions that
+  are indented to match surrounding code. [:pull:`21` by dgw]
 
 
 Version 0.1.5
