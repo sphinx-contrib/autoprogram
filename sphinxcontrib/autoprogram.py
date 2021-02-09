@@ -8,6 +8,8 @@
     :license: BSD, see LICENSE for details.
 
 """
+from __future__ import annotations
+
 # pylint: disable=protected-access,missing-docstring
 import argparse
 import collections
@@ -15,6 +17,7 @@ import inspect
 import os
 import re
 import sys
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 import unittest
 
 from docutils import nodes
@@ -37,7 +40,9 @@ __all__ = (
 )
 
 
-def get_subparser_action(parser):
+def get_subparser_action(
+    parser: argparse.ArgumentParser,
+) -> Optional[argparse._SubParsersAction]:
     neg1_action = parser._actions[-1]
 
     if isinstance(neg1_action, argparse._SubParsersAction):
@@ -47,8 +52,16 @@ def get_subparser_action(parser):
         if isinstance(a, argparse._SubParsersAction):
             return a
 
+    return None
 
-def scan_programs(parser, command=[], maxdepth=0, depth=0, groups=False):
+
+def scan_programs(
+    parser: argparse.ArgumentParser,
+    command=[],
+    maxdepth: int = 0,
+    depth: int = 0,
+    groups: bool = False,
+):
     if maxdepth and depth >= maxdepth:
         return
 
@@ -63,7 +76,7 @@ def scan_programs(parser, command=[], maxdepth=0, depth=0, groups=False):
         yield command, options, parser
 
     if parser._subparsers:
-        choices = ()
+        choices: Iterable[Tuple[Any, Any]] = ()
 
         subp_action = get_subparser_action(parser)
 
@@ -92,13 +105,13 @@ def scan_options(actions):
             yield format_option(arg)
 
 
-def format_positional_argument(arg):
+def format_positional_argument(arg) -> Tuple[List[str], str]:
     desc = (arg.help or "") % {"default": arg.default}
     name = (arg.metavar or arg.dest).lower()
     return [name], desc
 
 
-def format_option(arg):
+def format_option(arg) -> Tuple[List[str], str]:
     desc = (arg.help or "") % {"default": arg.default}
 
     if not isinstance(arg, (argparse._StoreAction, argparse._AppendAction)):
@@ -120,7 +133,7 @@ def format_option(arg):
     return names, desc
 
 
-def import_object(import_name):
+def import_object(import_name: str):
     module_name, expr = import_name.split(":", 1)
     try:
         mod = __import__(module_name)
@@ -149,7 +162,7 @@ def import_object(import_name):
             raise
 
     mod = reduce(getattr, module_name.split(".")[1:], mod)
-    globals_ = builtins
+    globals_: Dict[str, Any] = builtins  # type: ignore[assignment]
     if not isinstance(globals_, dict):
         globals_ = globals_.__dict__
     return eval(expr, globals_, mod.__dict__)
@@ -249,16 +262,16 @@ class AutoprogramDirective(Directive):
 
 
 def render_rst(
-    title,
+    title: str,
     options,
-    is_program,
-    is_subgroup,
-    description,
-    usage,
-    usage_strip,
-    usage_codeblock,
-    epilog,
-):
+    is_program: bool,
+    is_subgroup: bool,
+    description: Optional[str],
+    usage: str,
+    usage_strip: bool,
+    usage_codeblock: bool,
+    epilog: Optional[str],
+) -> Iterable[str]:
     if usage_strip:
         to_strip = title.rsplit(" ", 1)[0]
         len_to_strip = len(to_strip) - 4
@@ -307,7 +320,7 @@ def render_rst(
         yield line or ""
 
 
-def patch_option_role_to_allow_argument_form():
+def patch_option_role_to_allow_argument_form() -> None:
     """Before Sphinx 1.2.2, :rst:dir:`.. option::` directive hadn't
     allowed to not start with a dash or slash, so it hadn't been possible
     to represent positional arguments (not options).
@@ -320,7 +333,7 @@ def patch_option_role_to_allow_argument_form():
     std.option_desc_re = re.compile(r"((?:/|-|--)?[-_a-zA-Z0-9]+)(\s*.*)")
 
 
-def setup(app):
+def setup(app) -> Dict[str, bool]:
     app.add_directive("autoprogram", AutoprogramDirective)
     patch_option_role_to_allow_argument_form()
     return {
@@ -330,7 +343,7 @@ def setup(app):
 
 
 class ScannerTestCase(unittest.TestCase):
-    def test_simple_parser(self):
+    def test_simple_parser(self) -> None:
         parser = argparse.ArgumentParser(description="Process some integers.")
         parser.add_argument(
             "integers",
@@ -389,7 +402,7 @@ class ScannerTestCase(unittest.TestCase):
             options[4],
         )
 
-    def test_subcommands(self):
+    def test_subcommands(self) -> None:
         parser = argparse.ArgumentParser(description="Process some integers.")
         subparsers = parser.add_subparsers()
         max_parser = subparsers.add_parser("max", description="Find the max.")
@@ -437,7 +450,7 @@ class ScannerTestCase(unittest.TestCase):
         self.assertEqual(2, len(options))
         self.assertEqual((["n"], "An integer for the accumulator."), options[0])
 
-    def test_argument_groups(self):
+    def test_argument_groups(self) -> None:
         parser = argparse.ArgumentParser(description="This is a program.")
         parser.add_argument("-v", action="store_true", help="A global argument")
         plain_group = parser.add_argument_group(
@@ -487,14 +500,14 @@ class ScannerTestCase(unittest.TestCase):
         self.assertEqual(1, len(options))
         self.assertEqual((["fancy"], "Set the fancyness"), options[0])
 
-    def test_choices(self):
+    def test_choices(self) -> None:
         parser = argparse.ArgumentParser()
         parser.add_argument("--awesomeness", choices=["meh", "awesome"])
-        program, options, cmd_parser = list(scan_programs(parser))[0]
+        _program, options, _cmd_parser = list(scan_programs(parser))[0]
         log_option = options[1]
         self.assertEqual((["--awesomeness {meh,awesome}"], ""), log_option)
 
-    def test_parse_epilog(self):
+    def test_parse_epilog(self) -> None:
         parser = argparse.ArgumentParser(
             description="Process some integers.",
             epilog="The integers will be processed.",
@@ -503,12 +516,12 @@ class ScannerTestCase(unittest.TestCase):
         programs = list(programs)
         self.assertEqual(1, len(programs))
         (parser_data,) = programs
-        program, options, cmd_parser = parser_data
+        _program, _options, cmd_parser = parser_data
         self.assertEqual("The integers will be processed.", cmd_parser.epilog)
 
 
 class AutoprogramDirectiveTestCase(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.untouched_sys_path = sys.path[:]
         sample_prog_path = os.path.join(os.path.dirname(__file__), "..", "doc")
         sys.path.insert(0, sample_prog_path)
@@ -524,16 +537,16 @@ class AutoprogramDirectiveTestCase(unittest.TestCase):
             None,
         )
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         sys.path[:] = self.untouched_sys_path
 
-    def test_make_rst(self):
+    def test_make_rst(self) -> None:
         """Alt least it shouldn't raise errors during making RST string."""
         list(self.directive.make_rst())
 
 
 class UtilTestCase(unittest.TestCase):
-    def test_import_object(self):
+    def test_import_object(self) -> None:
         cls = import_object("sphinxcontrib.autoprogram:UtilTestCase")
         self.assertTrue(cls is UtilTestCase)
         instance = import_object(
@@ -543,7 +556,7 @@ class UtilTestCase(unittest.TestCase):
 
     if not hasattr(unittest.TestCase, "assertIsInstance"):
 
-        def assertIsInstance(self, instance, cls):
+        def assertIsInstance(self, instance, cls) -> None:  # type: ignore[override]
             self.assertTrue(
                 isinstance(instance, cls),
                 "{0!r} is not an instance of {1.__module__}."
