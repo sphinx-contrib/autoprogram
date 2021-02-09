@@ -113,7 +113,6 @@ def format_option(arg):
     return names, desc
 
 
-
 def import_object(import_name):
     module_name, expr = import_name.split(':', 1)
     try:
@@ -249,7 +248,7 @@ def render_rst(title, options, is_program, is_subgroup, description,
         usage = os.linesep.join([
             usage_lines[0].replace(to_strip, '...'),
         ] + [
-            l[len_to_strip:] for l in usage_lines[1:]
+            line[len_to_strip:] for line in usage_lines[1:]
         ])
 
     yield ''
