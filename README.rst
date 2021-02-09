@@ -14,7 +14,7 @@
    :alt: Build Status
 
 This contrib extension, ``sphinxcontrib.autoprogram``, provides an automated
-way to document CLI programs.  It scans ``arparser.ArgumentParser`` object,
+way to document CLI programs.  It scans ``argparse.ArgumentParser`` object,
 and then expands it into a set of ``.. program::`` and ``.. option::``
 directives.
 
