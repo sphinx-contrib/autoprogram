@@ -16,9 +16,9 @@
    :target: https://sphinxcontrib-autoprogram.readthedocs.io/
    :alt: Documentation Status
 
-.. image:: https://travis-ci.org/sphinx-contrib/autoprogram.svg?branch=master
+.. image:: https://github.com/sphinx-contrib/autoprogram/workflows/Build%20and%20Test/badge.svg?branch=master
+   :target: https://github.com/sphinx-contrib/autoprogram/actions
    :alt: Build Status
-   :target: https://travis-ci.org/sphinx-contrib/autoprogram
 
 This contrib extension, :mod:`sphinxcontrib.autoprogram`, provides an automated
 way to document CLI programs.  It scans :class:`argparse.ArgumentParser`
@@ -144,7 +144,7 @@ Additional Options for :rst:dir:`.. autoprogram::`
 
 ``:start_command: subcommand``
     Render document for the given subcommand. ``subcommand`` can be a space
-    separated list to render a sub-sub-...-command. 
+    separated list to render a sub-sub-...-command.
 
     .. versionadded:: 0.1.3
 
