@@ -541,8 +541,39 @@ class AutoprogramDirectiveTestCase(unittest.TestCase):
         sys.path[:] = self.untouched_sys_path
 
     def test_make_rst(self) -> None:
-        """Alt least it shouldn't raise errors during making RST string."""
-        list(self.directive.make_rst())
+        self.assertEqual(
+            "\n".join(self.directive.make_rst()).strip(),
+            inspect.cleandoc(
+            """
+            .. program:: cli.py
+
+            cli.py
+            ??????
+
+            Process some integers.
+
+            .. code-block:: console
+
+               usage: cli.py [-h] [-i IDENTITY] [--sum] N [N ...]
+
+            .. option:: n
+
+               An integer for the accumulator.
+
+            .. option:: -h, --help
+
+               show this help message and exit
+
+            .. option:: -i <identity>, --identity <identity>
+
+               the default result for no arguments (default: 0)
+
+            .. option:: --sum
+
+               Sum the integers (default: find the max).
+            """).strip()
+        )
+
 
 
 class UtilTestCase(unittest.TestCase):
