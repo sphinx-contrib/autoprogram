@@ -4,10 +4,13 @@ Changelog
 ..
    TODO Uncomment this:
 
-   Version 0.1.7
-   -------------
+Version 0.1.7
+-------------
 
-   To be released.
+Released on February 10, 2021.
+
+- Publish to PyPI via Github Actions.
+
 
 Version 0.1.6
 -------------
