@@ -11,9 +11,6 @@ version = '0.1.6'
 
 requires = ['Sphinx >= 1.2', 'six']
 
-if 'bdist_wheel' not in sys.argv and sys.version_info < (2, 7):
-    requires.append('argparse')
-
 
 def readme():
     with open('README.rst') as f:
@@ -38,8 +35,6 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
@@ -49,7 +44,6 @@ setup(
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy',
         'Programming Language :: Python :: Implementation :: Stackless',
         'Topic :: Documentation',
         'Topic :: Software Development :: Documentation',
@@ -60,6 +54,5 @@ setup(
     namespace_packages=['sphinxcontrib'],
     include_package_data=True,
     install_requires=requires,
-    extras_require={":python_version=='2.6'": ['argparse']},
     test_suite='sphinxcontrib.autoprogram.suite'
 )
