@@ -1,11 +1,20 @@
 Changelog
 =========
 
+..
+   TODO Uncomment this:
+
+   Version 0.1.7
+   -------------
+
+   To be released.
+
 Version 0.1.6
 -------------
 
-To be released.
+Released on February 10, 2021.
 
+- Dropped support for Python 2 and Pypy
 - Declare this extension safe for parallel reading
 - Migrate to Github Actions for CI [:issue:`28`, :pull:`32` by Langston Barrett]
 - Test against recent versions of Sphinx [:issue:`33`, :pull:`32` by Langston Barrett]
