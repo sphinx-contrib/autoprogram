@@ -4,6 +4,11 @@ Changelog
 ..
    TODO Uncomment this:
 
+   Version 0.1.8
+   -------------
+
+   To be released.
+
 Version 0.1.7
 -------------
 
