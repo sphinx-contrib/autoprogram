@@ -1,3 +1,4 @@
+# -*- coding: future_annotations -*-
 """
     sphinxcontrib.autoprogram
     ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -8,8 +9,6 @@
     :license: BSD, see LICENSE for details.
 
 """
-from __future__ import annotations
-
 # pylint: disable=protected-access,missing-docstring
 import argparse
 import collections

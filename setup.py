@@ -9,7 +9,11 @@ from setuptools import setup, find_packages
 # Do not change the variable name.  It's parsed by doc/conf.py script.
 version = '0.1.7'
 
-requires = ['Sphinx >= 1.2', 'six']
+requires = [
+    'future-annotations;python_version<"3.7"',
+    'Sphinx >= 1.2',
+    'six'
+]
 
 
 def readme():
