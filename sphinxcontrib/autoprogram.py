@@ -19,6 +19,7 @@ import re
 import sys
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 import unittest
+from unittest import mock
 
 from docutils import nodes
 from docutils.parsers.rst import Directive
@@ -534,7 +535,7 @@ class AutoprogramDirectiveTestCase(unittest.TestCase):
             0,
             ".. autoprogram:: cli:parser\n   :prog: cli.py\n",
             None,
-            None,
+            mock.Mock(),
         )
 
     def tearDown(self) -> None:
