@@ -1,3 +1,5 @@
 include README
 include LICENSE
 include CHANGES.*
+tox.ini
+recursive-include doc *

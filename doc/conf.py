@@ -280,6 +280,10 @@ intersphinx_mapping = {
 
 
 extlinks = {
+    'pull': (
+        'https://github.com/sphinx-contrib/autoprogram/pull/%s',
+        '#'
+    ),
     'issue': (
         'https://github.com/sphinx-contrib/autoprogram/issues/%s',
         '#'

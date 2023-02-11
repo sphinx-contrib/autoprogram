@@ -1,12 +1,35 @@
 Changelog
 =========
 
+..
+   TODO Uncomment this:
+
+   Version 0.1.8
+   -------------
+
+   To be released.
+
+Version 0.1.7
+-------------
+
+Released on February 10, 2021.
+
+- Publish to PyPI via Github Actions.
+
+
 Version 0.1.6
 -------------
 
-To be released.
+Released on February 10, 2021.
 
+- Dropped support for Python 2 and Pypy
 - Declare this extension safe for parallel reading
+- Migrate to Github Actions for CI [:issue:`28`, :pull:`32` by Langston Barrett]
+- Test against recent versions of Sphinx [:issue:`33`, :pull:`32` by Langston Barrett]
+- Format source code with Black [:issue:`30`, :pull:`32` by Langston Barrett]
+- Add documentation to the ``sdist`` [:issue:`26`, :pull:`32` by Langston Barrett]
+- Fixed unwanted ``<blockquote>`` tags in multi-line command descriptions that
+  are indented to match surrounding code. [:pull:`21` by dgw]
 
 
 Version 0.1.5
@@ -26,7 +49,7 @@ Released on February 27, 2018.
   during build without ``:no_usage_codeblock:`` option on Python 2.
   [:bbissue:`168`, :bbissue:`169`]
 - Fixed an issue with Sphinx 1.7 which removed ``sphinx.util.compat``.
-  [:issue:`1`, :issue:`2` by Zach Riggle]
+  [:issue:`1`, :pull:`2` by Zach Riggle]
 
 
 Version 0.1.3
@@ -42,7 +65,7 @@ Released on October 7, 2016.
   the top-level command usage).  [:bbpull:`112` by Alex Honeywell]
 - Added :ref:`new options <autoprogram-options>` to :rst:dir:`.. autoprogram::`
   directive:  [:bbpull:`112` by Alex Honeywell]
-    
+
   - ``maxdepth``
   - ``no_usage_codeblock``
   - ``start_command``

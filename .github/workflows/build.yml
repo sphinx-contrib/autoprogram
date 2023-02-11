@@ -1,0 +1,77 @@
+name: Build and Test
+
+on:
+  release:
+    types: [ published ]
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install tox
+
+    # NOTE(lb): By creating a sdist and then testing/working with that, we ensure
+    # its completeness.
+    - name: Move to sdist
+      run: |
+        python setup.py sdist
+        mkdir tmp
+        mv dist/*.tar.gz tmp/
+        cd tmp/
+        tar xvf *.tar.gz
+        for f in *; do
+          if [[ -d ${f} ]]; then
+            printf "Moving %s to %s\n" "${f}" "$PWD/sdist"
+            mv "${f}" sdist
+            break
+          fi
+        done
+
+    - name: Build
+      run: |
+        pwd
+        pip install wheel
+        python setup.py sdist bdist_wheel
+      working-directory: ${{ github.workspace }}/tmp/sdist
+
+    - name: Tox
+      run: |
+        tox --skip-missing-interpreters
+      working-directory: ${{ github.workspace }}/tmp/sdist
+
+    - name: Build documentation
+      run: |
+        pip install -r doc/rtd-requires.txt
+        cd doc
+        make
+      working-directory: ${{ github.workspace }}/tmp/sdist
+
+    - name: Install wheel
+      run: |
+        pip install dist/*.whl
+      working-directory: ${{ github.workspace }}/tmp/sdist
+
+    - name: Publish package
+      if: github.event_name == 'release' && startsWith(github.ref, 'refs/tags') && matrix.python-version == 3.9
+      uses: pypa/gh-action-pypi-publish@v1.4.2
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        packages_dir: ${{ github.workspace }}/tmp/sdist/dist

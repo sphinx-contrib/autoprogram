@@ -7,12 +7,9 @@ from setuptools import setup, find_packages
 
 
 # Do not change the variable name.  It's parsed by doc/conf.py script.
-version = '0.1.6'
+version = '0.1.7'
 
 requires = ['Sphinx >= 1.2', 'six']
-
-if 'bdist_wheel' not in sys.argv and sys.version_info < (2, 7):
-    requires.append('argparse')
 
 
 def readme():
@@ -38,28 +35,21 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy',
         'Programming Language :: Python :: Implementation :: Stackless',
         'Topic :: Documentation',
         'Topic :: Software Development :: Documentation',
         'Topic :: Utilities'
     ],
+    python_requires='>=3.7',
     platforms='any',
     packages=find_packages(),
     namespace_packages=['sphinxcontrib'],
     include_package_data=True,
     install_requires=requires,
-    extras_require={":python_version=='2.6'": ['argparse']},
     test_suite='sphinxcontrib.autoprogram.suite'
 )
