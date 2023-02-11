@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
 
     steps:
     - uses: actions/checkout@v2
@@ -69,7 +69,7 @@ jobs:
       working-directory: ${{ github.workspace }}/tmp/sdist
 
     - name: Publish package
-      if: github.event_name == 'release' && startsWith(github.ref, 'refs/tags') && matrix.python-version == 3.9
+      if: github.event_name == 'release' && startsWith(github.ref, 'refs/tags') && matrix.python-version == 3.11
       uses: pypa/gh-action-pypi-publish@v1.4.2
       with:
         user: __token__
