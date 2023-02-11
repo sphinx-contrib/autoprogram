@@ -477,7 +477,7 @@ class ScannerTestCase(unittest.TestCase):
         # section: default optionals
         program, options, group = sections[1]
         self.assertEqual([], program)
-        self.assertEqual("optional arguments", group.title)
+        self.assertEqual("options", group.title)
         self.assertEqual(None, group.description)
         self.assertEqual(2, len(options))
         self.assertEqual(
