@@ -60,7 +60,7 @@ jobs:
       run: |
         pip install -r doc/rtd-requires.txt
         cd doc
-        make
+        make html
       working-directory: ${{ github.workspace }}/tmp/sdist
 
     - name: Install wheel
