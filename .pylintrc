@@ -52,4 +52,4 @@ variable-naming-style=snake_case
 
 [VARIABLES]
 
-redefining-builtins-modules=six.moves,past.builtins,future.builtins,builtins,io
+redefining-builtins-modules=builtins,io
