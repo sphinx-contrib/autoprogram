@@ -12,20 +12,21 @@ from __future__ import annotations
 
 # pylint: disable=protected-access,missing-docstring
 import argparse
+import builtins
 import collections
 import inspect
 import os
 import re
 import sys
+from functools import reduce
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 import unittest
+from unittest import mock
 
 from docutils import nodes
 from docutils.parsers.rst import Directive
 from docutils.parsers.rst.directives import unchanged
 from docutils.statemachine import StringList, ViewList
-from six import exec_
-from six.moves import builtins, reduce
 from sphinx.domains import std
 from sphinx.util.nodes import nested_parse_with_titles
 
@@ -153,7 +154,7 @@ def import_object(import_name: str):
                 with open(f[0]) as fobj:
                     codestring = fobj.read()
                 foo = imp.new_module("foo")
-                exec_(codestring, foo.__dict__)
+                exec(codestring, foo.__dict__)
 
                 sys.modules["foo"] = foo
                 mod = __import__("foo")
@@ -476,7 +477,11 @@ class ScannerTestCase(unittest.TestCase):
         # section: default optionals
         program, options, group = sections[1]
         self.assertEqual([], program)
-        self.assertEqual("optional arguments", group.title)
+        # See https://github.com/sphinx-contrib/autoprogram/issues/24
+        if sys.version_info >= (3, 10):
+            self.assertEqual('options', group.title)
+        else:
+            self.assertEqual('optional arguments', group.title)
         self.assertEqual(None, group.description)
         self.assertEqual(2, len(options))
         self.assertEqual(
@@ -534,7 +539,7 @@ class AutoprogramDirectiveTestCase(unittest.TestCase):
             0,
             ".. autoprogram:: cli:parser\n   :prog: cli.py\n",
             None,
-            None,
+            mock.Mock(),
         )
 
     def tearDown(self) -> None:

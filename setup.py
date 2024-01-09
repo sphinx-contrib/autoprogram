@@ -7,9 +7,9 @@ from setuptools import setup, find_packages
 
 
 # Do not change the variable name.  It's parsed by doc/conf.py script.
-version = '0.1.7'
+version = '0.1.8'
 
-requires = ['Sphinx >= 1.2', 'six']
+requires = ['Sphinx >= 1.2']
 
 
 def readme():
@@ -40,6 +40,7 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: Stackless',
         'Topic :: Documentation',

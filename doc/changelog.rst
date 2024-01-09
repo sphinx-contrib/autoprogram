@@ -1,13 +1,13 @@
 Changelog
 =========
 
-..
-   TODO Uncomment this:
+Version 0.1.8
+-------------
 
-   Version 0.1.8
-   -------------
+Released on February 11, 2023.
 
-   To be released.
+- Test against Python 3.10, 3.11.
+
 
 Version 0.1.7
 -------------
