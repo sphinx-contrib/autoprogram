@@ -18,6 +18,7 @@ import inspect
 import os
 import re
 import sys
+import tempfile
 from functools import reduce
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 import unittest
@@ -144,16 +145,16 @@ def import_object(import_name: str):
         # the script, if there is a script named module_name. Otherwise, raise
         # an ImportError as it did before.
         import glob
-        import sys
         import os
-        import imp
+        import sys
+        import types
 
         for p in sys.path:
             f = glob.glob(os.path.join(p, module_name))
             if len(f) > 0:
                 with open(f[0]) as fobj:
                     codestring = fobj.read()
-                foo = imp.new_module("foo")
+                foo = types.ModuleType("foo")
                 exec(codestring, foo.__dict__)
 
                 sys.modules["foo"] = foo
@@ -589,6 +590,14 @@ class UtilTestCase(unittest.TestCase):
             'sphinxcontrib.autoprogram:UtilTestCase("test_import_object")'
         )
         self.assertIsInstance(instance, UtilTestCase)
+
+    def test_import_object_filename(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            filename = os.path.join(tmpdirname, 'somefile')
+            with open(filename, 'w') as fp:
+                fp.write("bar = 42\n")
+            value = import_object("{}:bar".format(filename))
+            self.assertTrue(value == 42)
 
     if not hasattr(unittest.TestCase, "assertIsInstance"):
 
