@@ -36,7 +36,6 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
@@ -48,7 +47,7 @@ setup(
         'Topic :: Software Development :: Documentation',
         'Topic :: Utilities'
     ],
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     platforms='any',
     packages=find_packages(),
     namespace_packages=['sphinxcontrib'],
