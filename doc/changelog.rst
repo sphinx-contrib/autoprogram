@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 0.1.9
+-------------
+
+Released on March 13, 2024.
+
+- Test against Python 3.12.
+- Drop support for Python 3.7.
+
 Version 0.1.8
 -------------
 
