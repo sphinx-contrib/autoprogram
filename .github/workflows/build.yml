@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v2
@@ -25,7 +25,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install tox
+        python -m pip install setuptools tox
 
     # NOTE(lb): By creating a sdist and then testing/working with that, we ensure
     # its completeness.
@@ -69,7 +69,7 @@ jobs:
       working-directory: ${{ github.workspace }}/tmp/sdist
 
     - name: Publish package
-      if: github.event_name == 'release' && startsWith(github.ref, 'refs/tags') && matrix.python-version == 3.11
+      if: github.event_name == 'release' && startsWith(github.ref, 'refs/tags') && matrix.python-version == 3.12
       uses: pypa/gh-action-pypi-publish@v1.4.2
       with:
         user: __token__
