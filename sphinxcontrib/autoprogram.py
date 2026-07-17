@@ -235,6 +235,9 @@ class AutoprogramDirective(Directive):
                     cmd_parser.prog = cmd_parser.prog.replace(original_prog, prog, 1)
                 title = cmd_parser.prog.rstrip()
                 description = cmd_parser.description
+                                # Disable ANSI color codes for doc output (Python 3.14+ adds `color` param)
+                                if hasattr(cmd_parser, '_color'):
+                                    cmd_parser._color = False
                 usage = cmd_parser.format_usage()
                 epilog = cmd_parser.epilog
                 is_subgroup = bool(commands)
