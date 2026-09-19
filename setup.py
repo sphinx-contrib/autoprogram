@@ -49,7 +49,7 @@ setup(
     ],
     python_requires='>=3.8',
     platforms='any',
-    packages=find_packages(),
+    py_modules=['sphinxcontrib.autoprogram'],
     include_package_data=True,
     install_requires=requires,
     test_suite='sphinxcontrib.autoprogram.suite'
