@@ -50,7 +50,6 @@ setup(
     python_requires='>=3.8',
     platforms='any',
     packages=find_packages(),
-    namespace_packages=['sphinxcontrib'],
     include_package_data=True,
     install_requires=requires,
     test_suite='sphinxcontrib.autoprogram.suite'
