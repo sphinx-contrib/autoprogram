@@ -36,6 +36,7 @@ __all__ = (
     "AutoprogramDirectiveTestCase",
     "ScannerTestCase",
     "import_object",
+    "resolve_start_command",
     "scan_programs",
     "setup",
     "suite",
@@ -55,6 +56,32 @@ def get_subparser_action(
             return a
 
     return None
+
+
+def resolve_start_command(
+    parser: argparse.ArgumentParser, start_command: List[str]
+) -> argparse.ArgumentParser:
+    """Descend into subparsers following each name in `start_command`.
+
+    Raises a `ValueError` naming the offending command when the parser has no
+    subparsers, or when a name does not match any available subcommand (typos
+    used to fail with a bare `KeyError`).
+    """
+    for name in start_command:
+        action = get_subparser_action(parser)
+
+        if not action:
+            raise ValueError("No actions for command " + name)
+
+        try:
+            parser = action.choices[name]
+        except KeyError:
+            valid = ", ".join(sorted(action.choices))
+            raise ValueError(
+                "No command {!r} (available commands: {})".format(name, valid)
+            ) from None
+
+    return parser
 
 
 def scan_programs(
@@ -200,22 +227,7 @@ class AutoprogramDirective(Directive):
             start_command.pop(0)
 
         if start_command:
-
-            def get_start_cmd_parser(p):
-                looking_for = start_command.pop(0)
-                action = get_subparser_action(p)
-
-                if not action:
-                    raise ValueError("No actions for command " + looking_for)
-
-                subp = action.choices[looking_for]
-
-                if start_command:
-                    return get_start_cmd_parser(subp)
-
-                return subp
-
-            parser = get_start_cmd_parser(parser)
+            parser = resolve_start_command(parser, start_command)
             if prog and parser.prog.startswith(original_prog):
                 parser.prog = parser.prog.replace(original_prog, prog, 1)
 
@@ -524,6 +536,28 @@ class ScannerTestCase(unittest.TestCase):
         (parser_data,) = programs
         _program, _options, cmd_parser = parser_data
         self.assertEqual("The integers will be processed.", cmd_parser.epilog)
+
+    def test_resolve_start_command(self) -> None:
+        parser = argparse.ArgumentParser(prog="tool")
+        subparsers = parser.add_subparsers()
+        subparsers.add_parser("install", help="Install it.")
+        subparsers.add_parser("remove", help="Remove it.")
+
+        sub = resolve_start_command(parser, ["install"])
+        self.assertIsInstance(sub, argparse.ArgumentParser)
+        self.assertTrue(sub.prog.endswith(" install"))
+
+        # A typo used to fail with a bare KeyError; it now names the bad
+        # command and lists the available ones.
+        with self.assertRaises(ValueError) as ctx:
+            resolve_start_command(parser, ["instal"])
+        self.assertIn("'instal'", str(ctx.exception))
+        self.assertIn("install", str(ctx.exception))
+
+        # A parser without subparsers keeps the original error.
+        with self.assertRaises(ValueError) as ctx:
+            resolve_start_command(argparse.ArgumentParser(), ["install"])
+        self.assertIn("No actions for command", str(ctx.exception))
 
 
 class AutoprogramDirectiveTestCase(unittest.TestCase):
